@@ -1,20 +1,23 @@
 #pragma once
 
 #include <list>
+#include <unordered_map>
 #include <utility>
 
 class LRUCache
 {
     public:
         LRUCache(const std::size_t cap);
-        void Set(const int key, const int val);
-        int Get(const int key) const;
+        void set(const int key, const int val);
+        int get(const int key) const;
 
     private:
         using CacheKv = std::pair<int, int>;
+		using CacheList = std::list<CacheKv>;
 
-        void SetKv(const int key, const int val);
+        void setKv(const int key, const int val);
 
         const std::size_t m_capacity;
-        std::list<CacheKv> m_cache;
+		CacheList m_cache;
+		std::unordered_map<int, CacheList::iterator> m_cacheLookup;
 };
