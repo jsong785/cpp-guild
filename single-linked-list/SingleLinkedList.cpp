@@ -6,13 +6,12 @@ Node* DisconnectNode(Node* disconnect, Node *disconnectParent)
     {
         return nullptr;
     }
-    assert(disconnect != nullptr);
-
-    if(disconnect != nullptr && disconnectParent == nullptr)
+    else if(disconnectParent == nullptr)
     {
         return disconnect;
     }
-    assert(disconnect != nullptr && disconnectParent != nullptr);
+    assert(disconnect != nullptr);
+    assert(disconnectParent != nullptr);
 
     disconnectParent->next = disconnect->next;
     return disconnect;
@@ -26,7 +25,6 @@ Node* DeleteNode(Node* head, std::size_t nFromEnd)
         newHead = nodes.first->next;
     }
 
-    auto special = DisconnectNode(nodes.first, nodes.second);
-    delete special;
+    delete DisconnectNode(nodes.first, nodes.second);
     return newHead;
 }
