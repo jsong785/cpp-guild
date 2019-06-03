@@ -41,15 +41,14 @@ constexpr std::remove_reference_t<PointType> TransformSquared(PointType&& pt)
 int main(const int argc, const char* argv[])
 {
     constexpr auto valSquared = TransformSquared(Point{1,2}).GetY();
-    std::cout << valSquared << "\n";
+    static_assert(valSquared == 4, "uhoh");
 
     constexpr auto justVal = Point{1, 300}.GetY();
-    std::cout << justVal << "\n";
+    static_assert(justVal == 300, "uhoh");
 
     Point compile{5, 5};
     compile.SetPoints(10, 10);
     const auto transformedCompile = TransformSquared(compile);
-    std::cout << transformedCompile.GetX() << "\n";
 
     return 1;
 }
