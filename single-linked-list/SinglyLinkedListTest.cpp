@@ -15,18 +15,18 @@ struct NodeMock
 
     const std::size_t id;
     std::function<void(ptrdiff_t)> deletedFunc;
-    NodeMock *next;
+    NodeMock *next{ nullptr };
 };
 
 TEST_CASE("FindNodePairsFromEnd max test", "[.]")
 {
-    auto head = new NodeMock{ 0, nullptr };
+    auto head = new NodeMock{ 0 };
 
     auto last = head;
     const auto max = std::numeric_limits<short>::max();
     for(short i = 1; i <= max; ++i) // create std::size_t max + 1 nodes (0 based index)
     {
-        auto current = new NodeMock{ static_cast<std::size_t>(i), nullptr };
+        auto current = new NodeMock{ static_cast<std::size_t>(i) };
         last->next = current;
         last = current;
     }
@@ -96,22 +96,22 @@ TEST_CASE("DisconnectNode", "")
 
     SECTION("no parent, has node")
     {
-        NodeMock node{0, nullptr};
+        NodeMock node{0};
         CHECK(DisconnectNode<NodeMock>(&node, nullptr) == &node);
     }
 
     SECTION("has parent, no node")
     {
-        NodeMock node{0, nullptr};
+        NodeMock node{0};
         CHECK(DisconnectNode<NodeMock>(nullptr, &node) == nullptr);
     }
 
     SECTION("has parent, has node")
     {
-        NodeMock parent{0, nullptr};
-        NodeMock node{1 };
+        NodeMock parent{0};
+        NodeMock node{1};
         node.next = &parent;
-        CHECK(DisconnectNode<NodeMock>(&node, &parent) == &node);
+        CHECK(DisconnectNode(&node, &parent) == &node);
     }
 }
 
@@ -134,7 +134,7 @@ TEST_CASE("FindNodePairsFromEnd", "")
 
     SECTION("one node delete head")
     {
-        NodeMock head{ 0, nullptr };
+        NodeMock head{ 0 };
 
         const auto nodes = FindNodePairsFromEnd<NodeMock, std::size_t>(&head, 0, 0);
         CHECK(nodes.first == &head);
@@ -143,7 +143,7 @@ TEST_CASE("FindNodePairsFromEnd", "")
 
     SECTION("one node no delete out of bounds")
     {
-        NodeMock head{ 0, nullptr };
+        NodeMock head{ 0 };
 
         const auto test1 = FindNodePairsFromEnd<NodeMock, std::size_t>(&head, 1, 0);
         CHECK(test1.first == nullptr);
@@ -156,8 +156,8 @@ TEST_CASE("FindNodePairsFromEnd", "")
 
     SECTION("two nodes")
     {
-        NodeMock head{ 0, nullptr };
-        NodeMock tail{ 1, nullptr };
+        NodeMock head{ 0 };
+        NodeMock tail{ 1 };
         head.next = &tail;
 
         const auto test1 = FindNodePairsFromEnd<NodeMock, std::size_t>(&head, 0, 0);
