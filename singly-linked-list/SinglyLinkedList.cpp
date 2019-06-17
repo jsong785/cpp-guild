@@ -1,16 +1,16 @@
 #pragma once
 
-template <typename Node, typename Iterable>
-std::pair<Node*, Node*> FindNodePairsFromEnd(Node* head, Iterable nFromEnd, const Iterable begin)
+template <typename Node>
+constexpr std::pair<Node*, Node*> FindNodePairsFromEnd(Node* head, std::size_t nFromEnd)
 {
     if(head == nullptr)
     {
         return { nullptr, nullptr };
     }
-    assert(head != nullptr);
 
     Node* nNode = nullptr;
     Node* nNodeParent = nullptr;
+
     auto current = head;
     while(current != nullptr)
     {
@@ -29,7 +29,7 @@ std::pair<Node*, Node*> FindNodePairsFromEnd(Node* head, Iterable nFromEnd, cons
         }
         else if(nNode == nullptr)
         {
-            if(nFromEnd == begin)
+            if(nFromEnd == 0)
             {
                 nNode = head;
             }
@@ -45,7 +45,7 @@ std::pair<Node*, Node*> FindNodePairsFromEnd(Node* head, Iterable nFromEnd, cons
 }
 
 template <typename Node>
-Node* DisconnectNode(Node* disconnect, Node *disconnectParent)
+constexpr Node* DisconnectNode(Node* disconnect, Node *disconnectParent)
 {
     if(disconnect == nullptr)
     {
@@ -55,19 +55,18 @@ Node* DisconnectNode(Node* disconnect, Node *disconnectParent)
     {
         return disconnect;
     }
-    assert(disconnect != nullptr);
-    assert(disconnectParent != nullptr);
 
     disconnectParent->next = disconnect->next;
     return disconnect;
 }
 
-template <typename Node, typename Iterable>
-Node* DeleteNode(Node* head, Iterable nFromEnd, const Iterable begin)
+template <typename Node>
+constexpr Node* DeleteNode(Node* head, const std::size_t nFromEnd)
 {
-    const auto nodes = FindNodePairsFromEnd(head, nFromEnd, begin);
+    const auto nodes = FindNodePairsFromEnd(head, nFromEnd);
     Node* newHead = head;
-    if(nodes.first == head) {
+    if(nodes.first == head) 
+    {
         newHead = nodes.first->next;
     }
 

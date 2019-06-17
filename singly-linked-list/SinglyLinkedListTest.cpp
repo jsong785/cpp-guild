@@ -33,7 +33,7 @@ TEST_CASE("FindNodePairsFromEnd max test", "[.]")
 
     SECTION("get head (delete head)")
     {
-        auto nodes = FindNodePairsFromEnd(head, std::numeric_limits<short>::max(), static_cast<short>(0));
+        auto nodes = FindNodePairsFromEnd(head, 0);
         CHECK(nodes.first == head);
         CHECK(nodes.second == nullptr);
     }
@@ -53,7 +53,7 @@ TEST_CASE("DeleteNFromEnd", "")
 
         head->next = one;
 
-        auto newHead = DeleteNode(head, 0, 0);
+        auto newHead = DeleteNode(head, 0);
         CHECK(addrDeleted == reinterpret_cast<ptrdiff_t>(one));
         CHECK(newHead == head);
     }
@@ -65,7 +65,7 @@ TEST_CASE("DeleteNFromEnd", "")
 
         head->next = one;
 
-        auto newHead = DeleteNode(head, 1, 0);
+        auto newHead = DeleteNode(head, 1);
         CHECK(addrDeleted == reinterpret_cast<ptrdiff_t>(head));
         CHECK(newHead == one);
     }
@@ -81,7 +81,7 @@ TEST_CASE("DeleteNFromEnd", "")
         one->next = two;
         two->next = three;
 
-        auto newHead = DeleteNode(head, 1, 0);
+        auto newHead = DeleteNode(head, 1);
         CHECK(addrDeleted == reinterpret_cast<ptrdiff_t>(two));
         CHECK(newHead == head);
     }
@@ -119,15 +119,15 @@ TEST_CASE("FindNodePairsFromEnd", "")
 {
     SECTION("no nodes")
     {
-        const auto test1 = FindNodePairsFromEnd<NodeMock, std::size_t>(nullptr, 0, 0);
+        const auto test1 = FindNodePairsFromEnd(static_cast<NodeMock*>(nullptr), 0);
         CHECK(test1.first == nullptr);
         CHECK(test1.second == nullptr);
 
-        const auto test2 = FindNodePairsFromEnd<NodeMock, std::size_t>(nullptr, 1, 0);
+        const auto test2 = FindNodePairsFromEnd(static_cast<NodeMock*>(nullptr), 1);
         CHECK(test2.first == nullptr);
         CHECK(test2.second == nullptr);
 
-        const auto test3 = FindNodePairsFromEnd<NodeMock, std::size_t>(nullptr, 2, 0);
+        const auto test3 = FindNodePairsFromEnd(static_cast<NodeMock*>(nullptr), 2);
         CHECK(test3.first == nullptr);
         CHECK(test3.second == nullptr);
     }
@@ -136,7 +136,7 @@ TEST_CASE("FindNodePairsFromEnd", "")
     {
         NodeMock head{ 0 };
 
-        const auto nodes = FindNodePairsFromEnd<NodeMock, std::size_t>(&head, 0, 0);
+        const auto nodes = FindNodePairsFromEnd(&head, 0);
         CHECK(nodes.first == &head);
         CHECK(nodes.second == nullptr); // no parent
     }
@@ -145,11 +145,11 @@ TEST_CASE("FindNodePairsFromEnd", "")
     {
         NodeMock head{ 0 };
 
-        const auto test1 = FindNodePairsFromEnd<NodeMock, std::size_t>(&head, 1, 0);
+        const auto test1 = FindNodePairsFromEnd(&head, 1);
         CHECK(test1.first == nullptr);
         CHECK(test1.second == nullptr);
 
-        const auto test2 = FindNodePairsFromEnd<NodeMock, std::size_t>(&head, 1, 0);
+        const auto test2 = FindNodePairsFromEnd(&head, 1);
         CHECK(test2.first == nullptr);
         CHECK(test2.second == nullptr);
     }
@@ -160,53 +160,16 @@ TEST_CASE("FindNodePairsFromEnd", "")
         NodeMock tail{ 1 };
         head.next = &tail;
 
-        const auto test1 = FindNodePairsFromEnd<NodeMock, std::size_t>(&head, 0, 0);
+        const auto test1 = FindNodePairsFromEnd(&head, 0);
         CHECK(test1.first == &tail);
         CHECK(test1.second == &head);
 
-        const auto test2 = FindNodePairsFromEnd<NodeMock, std::size_t>(&head, 1, 0);
+        const auto test2 = FindNodePairsFromEnd(&head, 1);
         CHECK(test2.first == &head);
         CHECK(test2.second == nullptr);
 
-        const auto test3 = FindNodePairsFromEnd<NodeMock, std::size_t>(&head, 100, 0);
+        const auto test3 = FindNodePairsFromEnd(&head, 100);
         CHECK(test3.first == nullptr);
         CHECK(test3.second == nullptr);
-    }
-}
-
-TEST_CASE("Other types") {
-    std::vector<NodeMock*> items{ new NodeMock{1}, new NodeMock{2}, new NodeMock{3} };
-    for(auto i = items.rbegin(); i != items.rend(); ++i)
-    {
-        if(std::next(i) != items.rend())
-        {
-            (*std::next(i))->next = (*i);
-        }
-    }
-    CHECK(items[0]->next != nullptr);
-    CHECK(items[1]->next->id == 3);
-
-    SECTION("delete id: 2")
-    {
-        auto newHead = DeleteNode((*items.begin()), items.begin()+1, items.begin());
-        CHECK(newHead->id == 1);
-        CHECK(newHead->next->id == 3);
-        CHECK(newHead->next->next == nullptr);
-    }
-
-    SECTION("delete id: 3")
-    {
-        auto newHead = DeleteNode((*items.begin()), items.begin(), items.begin());
-        CHECK(newHead->id == 1);
-        CHECK(newHead->next->id == 2);
-        CHECK(newHead->next->next == nullptr);
-    }
-
-    SECTION("delete id: 1")
-    {
-        auto newHead = DeleteNode((*items.begin()), std::prev(items.end()), items.begin());
-        CHECK(newHead->id == 2);
-        CHECK(newHead->next->id == 3);
-        CHECK(newHead->next->next == nullptr);
     }
 }
