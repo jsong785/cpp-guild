@@ -1,46 +1,43 @@
-#include <iostream>
-#include <vector>
+#include "catch.hpp"
 
-using namespace std;
-
-class HotelRoom {
+template <typename PriceFunc>
+class Hotel {
     public:
-        HotelRoom(const int bedrooms, const int bathrooms) 
-        : m_bedrooms(bedrooms), m_bathrooms(bathrooms) {}
-
-        virtual ~HotelRoom() = default;
-        HotelRoom(const HotelRoom&) = default;
-        HotelRoom(HotelRoom&&) = default;
-
-        HotelRoom& operator=(const HotelRoom&) = default;
-        HotelRoom& operator=(HotelRoom&&) = default;
+        constexpr Hotel(const PriceFunc *func, const int bedrooms, const int bathrooms) 
+        : m_func(func), m_bedrooms(bedrooms), m_bathrooms(bathrooms) {}
         
-        virtual int get_price() const {
-            constexpr auto COST_PER_BEDROOM{ 50 };
-            constexpr auto COST_PER_BATHROOM{ 100 };
-            return COST_PER_BEDROOM*m_bedrooms + COST_PER_BATHROOM*m_bathrooms;
+        constexpr int get_price() const {
+            return m_func(m_bedrooms, m_bathrooms);
         }
 
     private:
+        const PriceFunc *m_func;
         const int m_bedrooms{ 0 };
         const int m_bathrooms{ 0 };
 };
 
-class HotelApartment : public HotelRoom {
-    public:
-        HotelApartment(const int bedrooms, const int bathrooms) 
-        : HotelRoom(bedrooms, bathrooms) {}
-
-        virtual ~HotelApartment() = default;
-        HotelApartment(const HotelApartment&) = default;
-        HotelApartment(HotelApartment&&) = default;
-
-        HotelApartment& operator=(const HotelApartment&) = default;
-        HotelApartment& operator=(HotelApartment&&) = default;
-
-        int get_price() const final {
-            return HotelRoom::get_price() + 100;
-        }
+constexpr auto RoomCostFunc(const int bedrooms, const int bathrooms) {
+    constexpr auto COST_PER_BEDROOM{ 50 };
+    constexpr auto COST_PER_BATHROOM{ 100 };
+    return COST_PER_BEDROOM*bedrooms + COST_PER_BATHROOM*bathrooms;
 };
 
+constexpr auto ApartmentCostFunc(const int bedrooms, const int bathrooms) {
+    return RoomCostFunc(bedrooms, bathrooms) + 100;
+};
 
+constexpr auto HotelRoom(const int bedrooms, const int bathrooms) {
+    return Hotel<decltype(RoomCostFunc)>{&RoomCostFunc, bedrooms, bathrooms};
+}
+
+constexpr auto HotelApartment(const int bedrooms, const int bathrooms) {
+    return Hotel<decltype(ApartmentCostFunc)>{&ApartmentCostFunc, bedrooms, bathrooms};
+}
+
+TEST_CASE("test", "")
+{
+    constexpr auto rooms{ HotelRoom(3, 1) };
+    constexpr auto apartments{ HotelApartment(1, 1) };
+    constexpr auto totalPrice{ rooms.get_price() + apartments.get_price() };
+    static_assert(totalPrice == 500, "test failure");
+}
