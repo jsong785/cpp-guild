@@ -3,7 +3,7 @@
 template <typename PriceFunc>
 class Hotel {
     public:
-        constexpr Hotel(const PriceFunc *func, const int bedrooms, const int bathrooms) 
+        constexpr Hotel(const PriceFunc func, const int bedrooms, const int bathrooms) 
         : m_func(func), m_bedrooms(bedrooms), m_bathrooms(bathrooms) {}
         
         constexpr int get_price() const {
@@ -11,28 +11,25 @@ class Hotel {
         }
 
     private:
-        const PriceFunc *m_func;
+        const PriceFunc m_func;
         const int m_bedrooms{ 0 };
         const int m_bathrooms{ 0 };
 };
 
-constexpr auto RoomCostFunc(const int bedrooms, const int bathrooms) {
-    constexpr auto COST_PER_BEDROOM{ 50 };
-    constexpr auto COST_PER_BATHROOM{ 100 };
-    return COST_PER_BEDROOM*bedrooms + COST_PER_BATHROOM*bathrooms;
-};
+namespace {
+    constexpr auto RoomCostFunc(const int bedrooms, const int bathrooms) {
+        constexpr auto COST_PER_BEDROOM{ 50 };
+        constexpr auto COST_PER_BATHROOM{ 100 };
+        return COST_PER_BEDROOM*bedrooms + COST_PER_BATHROOM*bathrooms;
+    };
 
-constexpr auto ApartmentCostFunc(const int bedrooms, const int bathrooms) {
-    return RoomCostFunc(bedrooms, bathrooms) + 100;
-};
-
-constexpr auto HotelRoom(const int bedrooms, const int bathrooms) {
-    return Hotel<decltype(RoomCostFunc)>{&RoomCostFunc, bedrooms, bathrooms};
+    constexpr auto ApartmentCostFunc(const int bedrooms, const int bathrooms) {
+        return RoomCostFunc(bedrooms, bathrooms) + 100;
+    };
 }
 
-constexpr auto HotelApartment(const int bedrooms, const int bathrooms) {
-    return Hotel<decltype(ApartmentCostFunc)>{&ApartmentCostFunc, bedrooms, bathrooms};
-}
+#define HotelRoom(bedrooms, bathrooms) Hotel<decltype(RoomCostFunc)*>(RoomCostFunc, bedrooms, bathrooms)
+#define HotelApartment(bedrooms, bathrooms) Hotel<decltype(ApartmentCostFunc)*>(ApartmentCostFunc, bedrooms, bathrooms)
 
 TEST_CASE("test", "")
 {
