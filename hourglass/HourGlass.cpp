@@ -68,6 +68,14 @@ TEST_CASE("Hourglass", "")
     // won't compile, minimum is 3x3 matrix
     /*CHECK(GetHourglassMaxSum({ { 9, 9 },
                                { 0, 0 } }) == 63);*/
+
+    SECTION("3x3")
+    {
+        CHECK(GetHourglassMaxSum({ { 9, 9, 9 },
+                                   { 1, 9, 4 },
+                                   { 9, 9, 9 } }) == 63);
+    }
+
     SECTION("4x4")
     {
         // upper left
@@ -119,12 +127,5 @@ TEST_CASE("Hourglass", "")
                                    { 0, 0, 0, 0, 9, 9, 9, 0, 0, 0 },
                                    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
                                    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }) == 63);
-    }
-
-    SECTION("3x3")
-    {
-        CHECK(GetHourglassMaxSum({ { 9, 9, 9 },
-                                   { 1, 9, 4 },
-                                   { 9, 9, 9 } }) == 63);
     }
 }
