@@ -59,26 +59,38 @@ TEST_CASE("StrIsEqual", "[StringUtils]")
     static_assert((!StringUtils::StrIsEqual(U"ABCDE", U"ABC")), "");
 }
 
+namespace {
+
+template <typename T, unsigned N>
+constexpr bool CopyCompare(const T (&str)[N], const T (&expected)[N]) {
+    T copy[N]{ 0 };
+    StringUtils::StrCpy(copy, str);
+    return StringUtils::StrIsEqual(copy, expected);
+}
+
+}
+
 TEST_CASE("StrCpy", "[StringUtils]")
 {
-    char buf[16];
-
     SECTION("empty")
     {
-        StringUtils::StrCpy(buf, "");
-        CHECK(StringUtils::StrIsEqual(buf, ""));
+        CHECK(CopyCompare("", ""));
+        CHECK(CopyCompare(u"", u""));
+        CHECK(CopyCompare(U"", U""));
     }
 
     SECTION("single")
     {
-        StringUtils::StrCpy(buf, "A");
-        CHECK(StringUtils::StrIsEqual(buf, "A"));
+        CHECK(CopyCompare("A", "A"));
+        CHECK(CopyCompare(u"A", u"A"));
+        CHECK(CopyCompare(U"A", U"A"));
     }
 
     SECTION("multiple")
     {
-        StringUtils::StrCpy(buf, "ABC");
-        CHECK(StringUtils::StrIsEqual(buf, "ABC"));
+        CHECK(CopyCompare("ABC", "ABC"));
+        CHECK(CopyCompare(u"ABC", u"ABC"));
+        CHECK(CopyCompare(U"ABC", U"ABC"));
     }
 }
 
