@@ -3,7 +3,7 @@
 
 template
 <typename T, int N>
-int GetHourglassMaxSum(T (&&matrix)[N][N])
+T GetHourglassMaxSum(T (&&matrix)[N][N])
 {
     static_assert(N >= 3, "Matrix must be at least 3x3");
     const auto getVal = [](const auto matrix[N][N], const auto originRow, const auto originCol, const auto i) {
@@ -34,7 +34,7 @@ int GetHourglassMaxSum(T (&&matrix)[N][N])
 
     const auto getMaxSumOfHourglass = [&canDoHourglass, &getVal](const auto matrix[N][N]){
         bool init{ false };
-        int max{ 0 };
+        T max;
 
         for(auto row{ 0 }; row < N; ++row) {
             if(!canDoHourglass(row, 0)) { break; } // this row is invalid, reached the end!
