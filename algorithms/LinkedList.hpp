@@ -3,6 +3,11 @@
 namespace LinkedList {
 
 template <typename T>
+constexpr T* GetNFromEndSinglyLinkedListNonCircular(T *head, const unsigned N) {
+    return nullptr;
+}
+
+template <typename T>
 constexpr T* ReverseSinglyLinkedListNonCircular(T* head) {
     T* cache{ nullptr };
     while(head != nullptr) {

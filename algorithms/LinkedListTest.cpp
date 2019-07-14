@@ -216,3 +216,24 @@ TEST_CASE("Doubly Linked (circular)", "[LinkedList]")
         CHECK(tail.prev == &head);
     }
 }
+
+TEST_CASE("Return N from end Singly Linked (non-circular)", "[LinkedList]")
+{
+    using namespace LinkedList;
+    SECTION("empty")
+    {
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 0) ==  nullptr);
+    }
+
+    SECTION("single")
+    {
+    }
+
+    SECTION("two")
+    {
+    }
+
+    SECTION("three")
+    {
+    }
+}
