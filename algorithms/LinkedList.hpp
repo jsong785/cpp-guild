@@ -3,7 +3,7 @@
 namespace LinkedList {
 
 template <typename T>
-T* ReverseSinglyLinkedListNonCircular(T* head) {
+constexpr T* ReverseSinglyLinkedListNonCircular(T* head) {
     T* cache{ nullptr };
     while(head != nullptr) {
         auto currentHead{ head };
@@ -15,58 +15,47 @@ T* ReverseSinglyLinkedListNonCircular(T* head) {
 }
 
 template <typename T>
-T* ReverseSinglyLinkedListCircular(T* head) {
-    T* headCache{ head };
+constexpr T* ReverseSinglyLinkedListCircular(T* head) {
     T* cache{ nullptr };
     while(head != nullptr) {
+        if(head->next == nullptr) {
+            head->next = cache;
+            break;
+        }
+
         auto currentHead{ head };
         head = head->next;
         currentHead->next = cache;
         cache = currentHead;
-
-        if(currentHead->next == headCache) {
-            return currentHead;
-        }
     }
-    return nullptr;
+    return cache;
 }
 
 template <typename T>
-T* ReverseDoublyLinkedListNonCircular(T* head) {
+constexpr T* ReverseDoublyLinkedListNonCircular(T* head) {
+    T* current{ nullptr };
     while(head != nullptr) {
-        auto current{ head };
+        current = head;
         head = head->next;
-
-        auto next = current->next;
-        auto prev = current->prev;
-
-        current->prev = next;
-        current->next = prev;
-        
-        if(head == nullptr) {
-            return current;
-        }
+        std::swap(current->next, current->prev);
     }
-    return nullptr;
+    return current;
 }
 
 template <typename T>
-T* ReverseDoublyLinkedListCircular(T* head) {
-    auto headCache{ head };
+constexpr T* ReverseDoublyLinkedListCircular(T* head) {
+    T* current{ nullptr };
+    const auto cache{ head };
     while(head != nullptr) {
-        auto current{ head };
+        current = head;
         head = head->next;
 
-        auto next = current->next;
-        auto prev = current->prev;
-
-        current->prev = next;
-        current->next = prev;
-        if(current->prev == headCache) {
-            return current;
+        std::swap(current->next, current->prev);
+        if(head == cache) {
+            break;
         }
     }
-    return nullptr;
+    return current;
 }
 
 }

@@ -60,51 +60,44 @@ TEST_CASE("Singly Linked (circular)", "[LinkedList]")
     using namespace LinkedList;
     SECTION("empty")
     {
-        CHECK(ReverseDoublyLinkedListNonCircular(static_cast<Doubly*>(nullptr)) ==  nullptr);
+        CHECK(ReverseSinglyLinkedListCircular(static_cast<Singly*>(nullptr)) ==  nullptr);
     }
 
     SECTION("single")
     {
-        Doubly head;
-        CHECK(ReverseDoublyLinkedListNonCircular(&head) == &head);
+        Singly head;
+        head.next = &head;
+        CHECK(ReverseSinglyLinkedListCircular(&head) == &head);
     }
 
     SECTION("two")
     {
-        Doubly head;
-        Doubly tail;
+        Singly head;
+        Singly tail;
 
         head.next = &tail;
-        tail.prev = &head;
-        CHECK(ReverseDoublyLinkedListNonCircular(&head) == &tail);
+        tail.next = &head;
+        CHECK(ReverseSinglyLinkedListCircular(&head) == &tail);
 
         CHECK(tail.next == &head);
-        CHECK(head.next == nullptr);
-
-        CHECK(head.prev == &tail);
-        CHECK(tail.prev == nullptr);
+        CHECK(head.next == &tail);
     }
 
     SECTION("three")
     {
-        Doubly head;
-        Doubly middle;
-        Doubly tail;
+        Singly head;
+        Singly middle;
+        Singly tail;
 
         head.next = &middle;
         middle.next = &tail;
+        tail.next = &head;
 
-        tail.prev = &middle;
-        middle.prev = &head;
-        CHECK(ReverseDoublyLinkedListNonCircular(&head) == &tail);
+        CHECK(ReverseSinglyLinkedListCircular(&head) == &tail);
 
         CHECK(tail.next == &middle);
         CHECK(middle.next == &head);
-        CHECK(head.next == nullptr);
-
-        CHECK(head.prev == &middle);
-        CHECK(middle.prev == &tail);
-        CHECK(tail.prev == nullptr);
+        CHECK(head.next == &tail);
     }
 }
 
