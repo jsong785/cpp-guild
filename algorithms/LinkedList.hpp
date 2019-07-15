@@ -1,52 +1,60 @@
 #pragma once
 
-#include <utility>
-
 namespace LinkedList {
 
 template <typename T>
-constexpr std::pair<T*, T*> GetNFromEndSinglyLinkedListNonCircular(T *head, const unsigned N) {
+constexpr T* GetNFromEndSinglyLinkedListNonCircular(T *head, const unsigned N, T** nFromEndParent=nullptr) {
     auto nFromEnd{ N };
     T* slowParent{ nullptr };
     T* slow{ nullptr };
 
     T* headCopy{ head };
     while(head != nullptr) {
-        if(slow != nullptr) {
-            slow = slow->next;
-        }
-        if(slowParent != nullptr) {
-            slowParent = slowParent->next;
-        }
-
+        // initialize or increment slowParent
         if(slowParent == nullptr && slow != nullptr) {
             slowParent = headCopy;
         }
+        else if(slowParent != nullptr) {
+            slowParent = slowParent->next;
+        }
+
+        // initialize or increment slow
         if(nFromEnd == 0 && slow == nullptr) {
             slow = headCopy;
         }
+        else if(slow != nullptr) {
+            slow = slow->next;
+        }
 
+        // decrement nFromEnd (for above logic)
         if(nFromEnd > 0) {
             --nFromEnd;
         }
 
         head = head->next;
     }
-    return { slow, slowParent };
+    if(nFromEndParent != nullptr) {
+        *nFromEndParent = slowParent;
+    }
+    return slow;
 }
 
 template <typename T>
-constexpr std::pair<T*, T*> DeleteNFromEndSinglyLinkedListNonCircular(T *head, const unsigned N) {
-    auto nodes{ GetNFromEndSinglyLinkedListNonCircular(head, N) };
-    if(nodes.first != nullptr) {
-        if(nodes.first == head) {
-            head = nodes.first->next;
+constexpr T* DeleteNFromEndSinglyLinkedListNonCircular(T *head, const unsigned N, T** nodeToDelete=nullptr) {
+    T* nFromEndNodeParent{ nullptr };
+    auto nFromEndNode{ GetNFromEndSinglyLinkedListNonCircular(head, N, &nFromEndNodeParent) };
+    if(nFromEndNode != nullptr) {
+        if(nFromEndNode == head) {
+            head = nFromEndNode->next;
         }
-        if(nodes.second != nullptr) {
-            nodes.second->next = nodes.first->next;
+        if(nFromEndNodeParent != nullptr) {
+            nFromEndNodeParent->next = nFromEndNode->next;
         }
     }
-    return { head, nodes.first };
+    if(nodeToDelete != nullptr) {
+        *nodeToDelete = nFromEndNode;
+    }
+    return head;
 }
 
 template <typename T>

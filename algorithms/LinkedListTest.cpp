@@ -252,23 +252,28 @@ TEST_CASE("Return N from end Singly Linked (non-circular)", "[LinkedList]")
     using namespace LinkedList;
     SECTION("empty")
     {
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 0).first ==  nullptr);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 1).first ==  nullptr);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 2).first ==  nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 0) ==  nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 1) ==  nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 2) ==  nullptr);
     }
 
     SECTION("single")
     {
         SLR<Singly> list{1, false};
         auto head{ list[0] };
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).first == head);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).second == nullptr);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).first == nullptr);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).second == nullptr);
+        Singly* parent{ nullptr };
+        auto node = GetNFromEndSinglyLinkedListNonCircular(head, 0, &parent);
+        CHECK(node == head);
+        CHECK(parent == nullptr);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).first == nullptr);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).second == nullptr);
+        node = GetNFromEndSinglyLinkedListNonCircular(head, 1, &parent);
+        CHECK(node == nullptr);
+        CHECK(parent == nullptr);
+
+        node = GetNFromEndSinglyLinkedListNonCircular(head, 2, &parent);
+        CHECK(node == nullptr);
+        CHECK(parent == nullptr);
     }
 
     SECTION("two")
@@ -277,14 +282,18 @@ TEST_CASE("Return N from end Singly Linked (non-circular)", "[LinkedList]")
         auto head{ list[0] };
         auto tail{ list[1] };
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).first == tail);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).second == head);
+        Singly* parent{ nullptr };
+        auto node = GetNFromEndSinglyLinkedListNonCircular(head, 0, &parent);
+        CHECK(node == tail);
+        CHECK(parent == head);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).first == head);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).second == nullptr);
+        node = GetNFromEndSinglyLinkedListNonCircular(head, 1, &parent);
+        CHECK(node == head);
+        CHECK(parent == nullptr);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).first == nullptr);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).second == nullptr);
+        node = GetNFromEndSinglyLinkedListNonCircular(head, 2, &parent);
+        CHECK(node == nullptr);
+        CHECK(parent == nullptr);
     }
 
     SECTION("three")
@@ -294,14 +303,18 @@ TEST_CASE("Return N from end Singly Linked (non-circular)", "[LinkedList]")
         auto middle{ list[1] };
         auto tail{ list[2] };
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).first == tail);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).second == middle);
+        Singly* parent{ nullptr };
+        auto node = GetNFromEndSinglyLinkedListNonCircular(head, 0, &parent);
+        CHECK(node == tail);
+        CHECK(parent == middle);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).first == middle);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).second == head);
+        node = GetNFromEndSinglyLinkedListNonCircular(head, 1, &parent);
+        CHECK(node == middle);
+        CHECK(parent == head);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).first == head);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).second == nullptr);
+        node = GetNFromEndSinglyLinkedListNonCircular(head, 2, &parent);
+        CHECK(node == head);
+        CHECK(parent == nullptr);
     }
 }
 
@@ -310,9 +323,15 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
     using namespace LinkedList;
     SECTION("empty")
     {
-        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 0).first == nullptr);
-        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 1).first == nullptr);
-        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 2).first == nullptr);
+        Singly *toDelete{ nullptr };
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 0, &toDelete) == nullptr);
+        CHECK(toDelete == nullptr);
+
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 1, &toDelete) == nullptr);
+        CHECK(toDelete == nullptr);
+
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 2, &toDelete) == nullptr);
+        CHECK(toDelete == nullptr);
     }
 
     SECTION("single")
@@ -321,27 +340,30 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
             SLR<Singly> list{1, false};
             auto head{ list[0] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 0)};
-            CHECK(result.first == nullptr);
-            CHECK(result.second == head);
+            Singly *toDelete{ nullptr };
+            const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 0, &toDelete);
+            CHECK(node == nullptr);
+            CHECK(toDelete == head);
         }
 
         {
             SLR<Singly> list{1, false};
             auto head{ list[0] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 1)};
-            CHECK(result.first == head);
-            CHECK(result.second == nullptr);
+            Singly *toDelete{ nullptr };
+            const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 1, &toDelete);
+            CHECK(node == head);
+            CHECK(toDelete == nullptr);
         }
 
         {
             SLR<Singly> list{1, false};
             auto head{ list[0] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 2)};
-            CHECK(result.first == head);
-            CHECK(result.second == nullptr);
+            Singly *toDelete{ nullptr };
+            const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 2, &toDelete);
+            CHECK(node == head);
+            CHECK(toDelete == nullptr);
         }
     }
 
@@ -352,9 +374,10 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
             auto head{ list[0] };
             auto tail{ list[1] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 0)};
-            CHECK(result.first == head);
-            CHECK(result.second == tail);
+            Singly *toDelete{ nullptr };
+            const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 0, &toDelete);
+            CHECK(node == head);
+            CHECK(toDelete == tail);
         }
 
         {
@@ -362,9 +385,10 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
             auto head{ list[0] };
             auto tail{ list[1] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 1)};
-            CHECK(result.first == tail);
-            CHECK(result.second == head);
+            Singly *toDelete{ nullptr };
+            const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 1, &toDelete);
+            CHECK(node == tail);
+            CHECK(toDelete == head);
         }
 
         {
@@ -372,9 +396,10 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
             auto head{ list[0] };
             auto tail{ list[1] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 2)};
-            CHECK(result.first == head);
-            CHECK(result.second == nullptr);
+            Singly *toDelete{ nullptr };
+            const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 2, &toDelete);
+            CHECK(node == head);
+            CHECK(toDelete == nullptr);
         }
     }
 
@@ -386,9 +411,10 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
             auto middle{ list[1] };
             auto tail{ list[2] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 0)};
-            CHECK(result.first == head);
-            CHECK(result.second == tail);
+            Singly *toDelete{ nullptr };
+            const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 0, &toDelete);
+            CHECK(node == head);
+            CHECK(toDelete == tail);
         }
 
         {
@@ -397,9 +423,10 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
             auto middle{ list[1] };
             auto tail{ list[2] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 1)};
-            CHECK(result.first == head);
-            CHECK(result.second == middle);
+            Singly *toDelete{ nullptr };
+            const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 1, &toDelete);
+            CHECK(node == head);
+            CHECK(toDelete == middle);
         }
 
         {
@@ -408,9 +435,10 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
             auto middle{ list[1] };
             auto tail{ list[2] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 2)};
-            CHECK(result.first == middle);
-            CHECK(result.second == head);
+            Singly *toDelete{ nullptr };
+            const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 2, &toDelete);
+            CHECK(node == middle);
+            CHECK(toDelete == head);
         }
     }
 }
