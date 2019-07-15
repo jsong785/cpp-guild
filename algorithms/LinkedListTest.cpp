@@ -222,18 +222,144 @@ TEST_CASE("Return N from end Singly Linked (non-circular)", "[LinkedList]")
     using namespace LinkedList;
     SECTION("empty")
     {
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 0) ==  nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 0).first ==  nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 1).first ==  nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 2).first ==  nullptr);
     }
 
     SECTION("single")
     {
+        Singly head;
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).first == &head);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).second == nullptr);
+
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).first == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).second == nullptr);
+
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).first == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).second == nullptr);
     }
 
     SECTION("two")
     {
+        Singly head;
+        Singly tail;
+
+        head.next = &tail;
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).first == &tail);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).second == &head);
+
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).first == &head);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).second == nullptr);
+
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).first == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).second == nullptr);
     }
 
     SECTION("three")
     {
+        Singly head;
+        Singly middle;
+        Singly tail;
+
+        head.next = &middle;
+        middle.next = &tail;
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).first == &tail);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).second == &middle);
+
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).first == &middle);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).second == &head);
+
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).first == &head);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).second == nullptr);
+    }
+}
+
+TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
+{
+    using namespace LinkedList;
+    SECTION("empty")
+    {
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 0).first == nullptr);
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 1).first == nullptr);
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(static_cast<Singly*>(nullptr), 2).first == nullptr);
+    }
+
+    SECTION("single")
+    {
+        {
+            Singly head;
+
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 0)};
+            CHECK(result.first == nullptr);
+            CHECK(result.second == &head);
+        }
+
+        {
+            Singly head;
+
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 1)};
+            CHECK(result.first == &head);
+            CHECK(result.second == nullptr);
+        }
+
+        {
+            Singly head;
+
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 2)};
+            CHECK(result.first == &head);
+            CHECK(result.second == nullptr);
+        }
+    }
+
+    SECTION("two")
+    {
+        {
+            Singly head;
+            Singly tail;
+            head.next = &tail;
+
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 0)};
+            CHECK(result.first == &head);
+            CHECK(result.second == &tail);
+        }
+
+        {
+            Singly head;
+            Singly tail;
+            head.next = &tail;
+
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 1)};
+            CHECK(result.first == &tail);
+            CHECK(result.second == &head);
+        }
+
+        {
+            Singly head;
+            Singly tail;
+            head.next = &tail;
+
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 2)};
+            CHECK(result.first == &head);
+            CHECK(result.second == nullptr);
+        }
+    }
+
+    SECTION("three")
+    {
+        /*Singly head;
+        Singly middle;
+        Singly tail;
+
+        head.next = &middle;
+        middle.next = &tail;
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 0).first == &head);
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 0).second == &tail);
+
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 1).first == &head);
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 1).second == &middle);
+
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 2).first == &middle);
+        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 2).second == &head);*/
     }
 }
