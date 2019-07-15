@@ -71,8 +71,9 @@ TEST_CASE("Singly Linked (non-circular)", "[LinkedList]")
 
     SECTION("single")
     {
-        Singly head;
-        CHECK(ReverseSinglyLinkedListNonCircular(&head) == &head);
+        SLR<Singly> list{1, false};
+        auto head{ list[0] };
+        CHECK(ReverseSinglyLinkedListNonCircular(head) == head);
     }
 
     SECTION("two")
@@ -113,9 +114,9 @@ TEST_CASE("Singly Linked (circular)", "[LinkedList]")
 
     SECTION("single")
     {
-        Singly head;
-        head.next = &head;
-        CHECK(ReverseSinglyLinkedListCircular(&head) == &head);
+        SLR<Singly> list{1, true};
+        auto head{ list[0] };
+        CHECK(ReverseSinglyLinkedListCircular(head) == head);
     }
 
     SECTION("two")
@@ -155,8 +156,9 @@ TEST_CASE("Doubly Linked (non-circular)", "[LinkedList]")
 
     SECTION("single")
     {
-        Doubly head;
-        CHECK(ReverseDoublyLinkedListNonCircular(&head) == &head);
+        DLR<Doubly> list{1, false};
+        auto head{ list[0] };
+        CHECK(ReverseDoublyLinkedListNonCircular(head) == head);
     }
 
     SECTION("two")
@@ -203,13 +205,12 @@ TEST_CASE("Doubly Linked (circular)", "[LinkedList]")
 
     SECTION("single")
     {
-        Doubly head;
-        head.next = &head;
-        head.prev = &head;
+        DLR<Doubly> list{1, true};
+        auto head{ list[0] };
 
-        CHECK(ReverseDoublyLinkedListCircular(&head) == &head);
-        CHECK(head.next == &head);
-        CHECK(head.prev == &head);
+        CHECK(ReverseDoublyLinkedListCircular(head) == head);
+        CHECK(head->next == head);
+        CHECK(head->prev == head);
     }
 
     SECTION("two")
