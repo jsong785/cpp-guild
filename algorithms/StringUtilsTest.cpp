@@ -62,10 +62,10 @@ TEST_CASE("StrIsEqual", "[StringUtils]")
 namespace {
 
 template <typename T, unsigned N>
-constexpr bool CopyCompare(const T (&str)[N], const T (&expected)[N]) {
+constexpr bool CopyCompare(const T (&str)[N]) {
     T copy[N]{ 0 };
     StringUtils::StrCpy(copy, str);
-    return StringUtils::StrIsEqual(copy, expected);
+    return StringUtils::StrIsEqual(copy, str);
 }
 
 }
@@ -74,23 +74,23 @@ TEST_CASE("StrCpy", "[StringUtils]")
 {
     SECTION("empty")
     {
-        CHECK(CopyCompare("", ""));
-        CHECK(CopyCompare(u"", u""));
-        CHECK(CopyCompare(U"", U""));
+        CHECK(CopyCompare(""));
+        CHECK(CopyCompare(u""));
+        CHECK(CopyCompare(U""));
     }
 
     SECTION("single")
     {
-        CHECK(CopyCompare("A", "A"));
-        CHECK(CopyCompare(u"A", u"A"));
-        CHECK(CopyCompare(U"A", U"A"));
+        CHECK(CopyCompare("A"));
+        CHECK(CopyCompare(u"A"));
+        CHECK(CopyCompare(U"A"));
     }
 
     SECTION("multiple")
     {
-        CHECK(CopyCompare("ABC", "ABC"));
-        CHECK(CopyCompare(u"ABC", u"ABC"));
-        CHECK(CopyCompare(U"ABC", U"ABC"));
+        CHECK(CopyCompare("ABC"));
+        CHECK(CopyCompare(u"ABC"));
+        CHECK(CopyCompare(U"ABC"));
     }
 }
 

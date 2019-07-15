@@ -347,19 +347,43 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
 
     SECTION("three")
     {
-        /*Singly head;
-        Singly middle;
-        Singly tail;
+        {
+            Singly head;
+            Singly middle;
+            Singly tail;
 
-        head.next = &middle;
-        middle.next = &tail;
-        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 0).first == &head);
-        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 0).second == &tail);
+            head.next = &middle;
+            middle.next = &tail;
 
-        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 1).first == &head);
-        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 1).second == &middle);
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 0)};
+            CHECK(result.first == &head);
+            CHECK(result.second == &tail);
+        }
 
-        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 2).first == &middle);
-        CHECK(DeleteNFromEndSinglyLinkedListNonCircular(&head, 2).second == &head);*/
+        {
+            Singly head;
+            Singly middle;
+            Singly tail;
+
+            head.next = &middle;
+            middle.next = &tail;
+
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 1)};
+            CHECK(result.first == &head);
+            CHECK(result.second == &middle);
+        }
+
+        {
+            Singly head;
+            Singly middle;
+            Singly tail;
+
+            head.next = &middle;
+            middle.next = &tail;
+
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 2)};
+            CHECK(result.first == &middle);
+            CHECK(result.second == &head);
+        }
     }
 }
