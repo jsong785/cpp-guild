@@ -24,7 +24,7 @@ namespace {
             SinglyLinkedListRaii& operator=(const SinglyLinkedListRaii&) = delete;
             SinglyLinkedListRaii& operator=(SinglyLinkedListRaii&&) = delete;
 
-            T* operator[](unsigned n)
+            T* operator[](const unsigned n)
             { return &m_nodes[n]; }
 
         private:
@@ -45,7 +45,7 @@ namespace {
             DoublyLinkedListRaii& operator=(const DoublyLinkedListRaii&) = delete;
             DoublyLinkedListRaii& operator=(DoublyLinkedListRaii&&) = delete;
 
-            T* operator[](unsigned n)
+            T* operator[](const unsigned n)
             { return &m_nodes[n]; }
 
         private:
