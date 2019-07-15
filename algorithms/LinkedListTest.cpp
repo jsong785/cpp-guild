@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "LinkedList.hpp"
+#include <vector>
 
 namespace {
     struct Singly {
@@ -10,6 +11,54 @@ namespace {
         Doubly *next{ nullptr };
         Doubly *prev{ nullptr };
     };
+
+    template <typename T>
+    class SinglyLinkedListRaii {
+        public:
+            SinglyLinkedListRaii(const unsigned amt, const bool circular) :
+                m_nodes{Create(amt, circular)} {}
+            SinglyLinkedListRaii(const SinglyLinkedListRaii&) = delete;
+            SinglyLinkedListRaii(SinglyLinkedListRaii&&) = delete;
+            ~SinglyLinkedListRaii() = default;
+
+            SinglyLinkedListRaii& operator=(const SinglyLinkedListRaii&) = delete;
+            SinglyLinkedListRaii& operator=(SinglyLinkedListRaii&&) = delete;
+
+            T* operator[](unsigned n)
+            { return &m_nodes[n]; }
+
+        private:
+            std::vector<T> Create(const unsigned amt, const bool circular);
+
+            std::vector<T> m_nodes;
+    };
+
+    template <typename T>
+    class DoublyLinkedListRaii {
+        public:
+            DoublyLinkedListRaii(const unsigned amt, const bool circular) :
+                m_nodes{Create(amt, circular)} {}
+            DoublyLinkedListRaii(const DoublyLinkedListRaii&) = delete;
+            DoublyLinkedListRaii(DoublyLinkedListRaii&&) = delete;
+            ~DoublyLinkedListRaii() = default;
+
+            DoublyLinkedListRaii& operator=(const DoublyLinkedListRaii&) = delete;
+            DoublyLinkedListRaii& operator=(DoublyLinkedListRaii&&) = delete;
+
+            T* operator[](unsigned n)
+            { return &m_nodes[n]; }
+
+        private:
+            std::vector<T> Create(const unsigned amt, const bool circular);
+            
+            std::vector<T> m_nodes;
+    };
+
+    template <typename T>
+    using SLR = SinglyLinkedListRaii<T>;
+
+    template <typename T>
+    using DLR = DoublyLinkedListRaii<T>;
 }
 
 TEST_CASE("Singly Linked (non-circular)", "[LinkedList]")
@@ -28,30 +77,29 @@ TEST_CASE("Singly Linked (non-circular)", "[LinkedList]")
 
     SECTION("two")
     {
-        Singly head;
-        Singly tail;
+        SLR<Singly> list{2, false};
 
-        head.next = &tail;
-        CHECK(ReverseSinglyLinkedListNonCircular(&head) == &tail);
+        auto head = list[0];
+        auto tail = list[1];
+        CHECK(ReverseSinglyLinkedListNonCircular(head) == tail);
 
-        CHECK(tail.next == &head);
-        CHECK(head.next == nullptr);
+        CHECK(tail->next == head);
+        CHECK(head->next == nullptr);
     }
 
     SECTION("three")
     {
-        Singly head;
-        Singly middle;
-        Singly tail;
+        SLR<Singly> list{3, false};
 
-        head.next = &middle;
-        middle.next = &tail;
+        auto head = list[0];
+        auto middle = list[1];
+        auto tail = list[2];
 
-        CHECK(ReverseSinglyLinkedListNonCircular(&head) == &tail);
+        CHECK(ReverseSinglyLinkedListNonCircular(head) == tail);
 
-        CHECK(tail.next == &middle);
-        CHECK(middle.next == &head);
-        CHECK(head.next == nullptr);
+        CHECK(tail->next == middle);
+        CHECK(middle->next == head);
+        CHECK(head->next == nullptr);
     }
 }
 
@@ -72,32 +120,28 @@ TEST_CASE("Singly Linked (circular)", "[LinkedList]")
 
     SECTION("two")
     {
-        Singly head;
-        Singly tail;
+        SLR<Singly> list{2, true};
+        auto head{ list[0] };
+        auto tail{ list[1] };
 
-        head.next = &tail;
-        tail.next = &head;
-        CHECK(ReverseSinglyLinkedListCircular(&head) == &tail);
+        CHECK(ReverseSinglyLinkedListCircular(head) == tail);
 
-        CHECK(tail.next == &head);
-        CHECK(head.next == &tail);
+        CHECK(tail->next == head);
+        CHECK(head->next == tail);
     }
 
     SECTION("three")
     {
-        Singly head;
-        Singly middle;
-        Singly tail;
+        SLR<Singly> list{3, true};
+        auto head{ list[0] };
+        auto middle{ list[1] };
+        auto tail{ list[2] };
 
-        head.next = &middle;
-        middle.next = &tail;
-        tail.next = &head;
+        CHECK(ReverseSinglyLinkedListCircular(head) == tail);
 
-        CHECK(ReverseSinglyLinkedListCircular(&head) == &tail);
-
-        CHECK(tail.next == &middle);
-        CHECK(middle.next == &head);
-        CHECK(head.next == &tail);
+        CHECK(tail->next == middle);
+        CHECK(middle->next == head);
+        CHECK(head->next == tail);
     }
 }
 
@@ -117,40 +161,35 @@ TEST_CASE("Doubly Linked (non-circular)", "[LinkedList]")
 
     SECTION("two")
     {
-        Doubly head;
-        Doubly tail;
+        DLR<Doubly> list{2, false};
 
-        head.next = &tail;
-        tail.prev = &head;
-        CHECK(ReverseDoublyLinkedListNonCircular(&head) == &tail);
+        auto head{ list[0] };
+        auto tail{ list[1] };
+        CHECK(ReverseDoublyLinkedListNonCircular(head) == tail);
 
-        CHECK(tail.next == &head);
-        CHECK(head.next == nullptr);
+        CHECK(tail->next == head);
+        CHECK(head->next == nullptr);
 
-        CHECK(head.prev == &tail);
-        CHECK(tail.prev == nullptr);
+        CHECK(head->prev == tail);
+        CHECK(tail->prev == nullptr);
     }
 
     SECTION("three")
     {
-        Doubly head;
-        Doubly middle;
-        Doubly tail;
+        DLR<Doubly> list{3, false};
+        auto head{ list[0] };
+        auto middle{ list[1] };
+        auto tail{ list[2] };
 
-        head.next = &middle;
-        middle.next = &tail;
+        CHECK(ReverseDoublyLinkedListNonCircular(head) == tail);
 
-        tail.prev = &middle;
-        middle.prev = &head;
-        CHECK(ReverseDoublyLinkedListNonCircular(&head) == &tail);
+        CHECK(tail->next == middle);
+        CHECK(middle->next == head);
+        CHECK(head->next == nullptr);
 
-        CHECK(tail.next == &middle);
-        CHECK(middle.next == &head);
-        CHECK(head.next == nullptr);
-
-        CHECK(head.prev == &middle);
-        CHECK(middle.prev == &tail);
-        CHECK(tail.prev == nullptr);
+        CHECK(head->prev == middle);
+        CHECK(middle->prev == tail);
+        CHECK(tail->prev == nullptr);
     }
 }
 
@@ -175,45 +214,35 @@ TEST_CASE("Doubly Linked (circular)", "[LinkedList]")
 
     SECTION("two")
     {
-        Doubly head;
-        Doubly tail;
+        DLR<Doubly> list{2, true};
+        auto head{ list[0] };
+        auto tail{ list[1] };
 
-        head.next = &tail;
-        tail.next = &head;
+        CHECK(ReverseDoublyLinkedListCircular(head) == tail);
 
-        tail.prev = &head;
-        head.prev = &tail;
-        CHECK(ReverseDoublyLinkedListCircular(&head) == &tail);
+        CHECK(tail->next == head);
+        CHECK(head->next == tail);
 
-        CHECK(tail.next == &head);
-        CHECK(head.next == &tail);
-
-        CHECK(head.prev == &tail);
-        CHECK(tail.prev == &head);
+        CHECK(head->prev == tail);
+        CHECK(tail->prev == head);
     }
 
     SECTION("three")
     {
-        Doubly head;
-        Doubly middle;
-        Doubly tail;
+        DLR<Doubly> list{3, true};
+        auto head{ list[0] };
+        auto middle{ list[1] };
+        auto tail{ list[2] };
 
-        head.next = &middle;
-        middle.next = &tail;
-        tail.next = &head;
+        CHECK(ReverseDoublyLinkedListCircular(head) == tail);
 
-        tail.prev = &middle;
-        middle.prev = &head;
-        head.prev = &tail;
-        CHECK(ReverseDoublyLinkedListCircular(&head) == &tail);
+        CHECK(tail->next == middle);
+        CHECK(middle->next == head);
+        CHECK(head->next == tail);
 
-        CHECK(tail.next == &middle);
-        CHECK(middle.next == &head);
-        CHECK(head.next == &tail);
-
-        CHECK(head.prev == &middle);
-        CHECK(middle.prev == &tail);
-        CHECK(tail.prev == &head);
+        CHECK(head->prev == middle);
+        CHECK(middle->prev == tail);
+        CHECK(tail->prev == head);
     }
 }
 
@@ -229,49 +258,49 @@ TEST_CASE("Return N from end Singly Linked (non-circular)", "[LinkedList]")
 
     SECTION("single")
     {
-        Singly head;
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).first == &head);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).second == nullptr);
+        SLR<Singly> list{1, false};
+        auto head{ list[0] };
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).first == head);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).second == nullptr);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).first == nullptr);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).second == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).first == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).second == nullptr);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).first == nullptr);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).second == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).first == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).second == nullptr);
     }
 
     SECTION("two")
     {
-        Singly head;
-        Singly tail;
+        SLR<Singly> list{2, false};
+        auto head{ list[0] };
+        auto tail{ list[1] };
 
-        head.next = &tail;
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).first == &tail);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).second == &head);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).first == tail);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).second == head);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).first == &head);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).second == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).first == head);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).second == nullptr);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).first == nullptr);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).second == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).first == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).second == nullptr);
     }
 
     SECTION("three")
     {
-        Singly head;
-        Singly middle;
-        Singly tail;
+        SLR<Singly> list{3, false};
+        auto head{ list[0] };
+        auto middle{ list[1] };
+        auto tail{ list[2] };
 
-        head.next = &middle;
-        middle.next = &tail;
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).first == &tail);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 0).second == &middle);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).first == tail);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 0).second == middle);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).first == &middle);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 1).second == &head);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).first == middle);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 1).second == head);
 
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).first == &head);
-        CHECK(GetNFromEndSinglyLinkedListNonCircular(&head, 2).second == nullptr);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).first == head);
+        CHECK(GetNFromEndSinglyLinkedListNonCircular(head, 2).second == nullptr);
     }
 }
 
@@ -288,26 +317,29 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
     SECTION("single")
     {
         {
-            Singly head;
+            SLR<Singly> list{1, false};
+            auto head{ list[0] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 0)};
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 0)};
             CHECK(result.first == nullptr);
-            CHECK(result.second == &head);
+            CHECK(result.second == head);
         }
 
         {
-            Singly head;
+            SLR<Singly> list{1, false};
+            auto head{ list[0] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 1)};
-            CHECK(result.first == &head);
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 1)};
+            CHECK(result.first == head);
             CHECK(result.second == nullptr);
         }
 
         {
-            Singly head;
+            SLR<Singly> list{1, false};
+            auto head{ list[0] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 2)};
-            CHECK(result.first == &head);
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 2)};
+            CHECK(result.first == head);
             CHECK(result.second == nullptr);
         }
     }
@@ -315,32 +347,32 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
     SECTION("two")
     {
         {
-            Singly head;
-            Singly tail;
-            head.next = &tail;
+            SLR<Singly> list{2, false};
+            auto head{ list[0] };
+            auto tail{ list[1] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 0)};
-            CHECK(result.first == &head);
-            CHECK(result.second == &tail);
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 0)};
+            CHECK(result.first == head);
+            CHECK(result.second == tail);
         }
 
         {
-            Singly head;
-            Singly tail;
-            head.next = &tail;
+            SLR<Singly> list{2, false};
+            auto head{ list[0] };
+            auto tail{ list[1] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 1)};
-            CHECK(result.first == &tail);
-            CHECK(result.second == &head);
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 1)};
+            CHECK(result.first == tail);
+            CHECK(result.second == head);
         }
 
         {
-            Singly head;
-            Singly tail;
-            head.next = &tail;
+            SLR<Singly> list{2, false};
+            auto head{ list[0] };
+            auto tail{ list[1] };
 
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 2)};
-            CHECK(result.first == &head);
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 2)};
+            CHECK(result.first == head);
             CHECK(result.second == nullptr);
         }
     }
@@ -348,42 +380,90 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
     SECTION("three")
     {
         {
-            Singly head;
-            Singly middle;
-            Singly tail;
+            SLR<Singly> list{3, false};
+            auto head{ list[0] };
+            auto middle{ list[1] };
+            auto tail{ list[2] };
 
-            head.next = &middle;
-            middle.next = &tail;
-
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 0)};
-            CHECK(result.first == &head);
-            CHECK(result.second == &tail);
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 0)};
+            CHECK(result.first == head);
+            CHECK(result.second == tail);
         }
 
         {
-            Singly head;
-            Singly middle;
-            Singly tail;
+            SLR<Singly> list{3, false};
+            auto head{ list[0] };
+            auto middle{ list[1] };
+            auto tail{ list[2] };
 
-            head.next = &middle;
-            middle.next = &tail;
-
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 1)};
-            CHECK(result.first == &head);
-            CHECK(result.second == &middle);
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 1)};
+            CHECK(result.first == head);
+            CHECK(result.second == middle);
         }
 
         {
-            Singly head;
-            Singly middle;
-            Singly tail;
+            SLR<Singly> list{3, false};
+            auto head{ list[0] };
+            auto middle{ list[1] };
+            auto tail{ list[2] };
 
-            head.next = &middle;
-            middle.next = &tail;
-
-            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(&head, 2)};
-            CHECK(result.first == &middle);
-            CHECK(result.second == &head);
+            const auto result{ DeleteNFromEndSinglyLinkedListNonCircular(head, 2)};
+            CHECK(result.first == middle);
+            CHECK(result.second == head);
         }
     }
+}
+
+// slow is ok for these unit tests
+template <typename T>
+std::vector<T> SinglyLinkedListRaii<T>::Create(const unsigned amt, const bool circular) {
+    std::vector<T> nodes(amt);
+    nodes.resize(amt);
+
+    for(auto iter{ nodes.begin() }; iter != nodes.end(); ++iter) {
+        T* next{ nullptr };
+
+        auto nextIter{ std::next(iter) };
+        if(nextIter != nodes.end()) {
+            next = &*nextIter;
+        }
+
+        iter->next = next;
+    }
+
+    if(circular) {
+        nodes.rbegin()->next = &*nodes.begin();
+    }
+
+    return nodes;
+}
+
+template <typename T>
+std::vector<T> DoublyLinkedListRaii<T>::Create(const unsigned amt, const bool circular) {
+    std::vector<T> nodes(amt);
+    nodes.resize(amt);
+
+    for(auto iter{ nodes.begin() }; iter != nodes.end(); ++iter) {
+        T* next{ nullptr };
+
+        auto nextIter{ std::next(iter) };
+        if(nextIter != nodes.end()) {
+            next = &*nextIter;
+        }
+
+        iter->next = next;
+
+        T* prev{ nullptr };
+        if(iter != nodes.begin()) {
+            prev = &*std::prev(iter);
+        }
+        iter->prev = prev;
+    }
+
+    if(circular) {
+        nodes.rbegin()->next = &*nodes.begin();
+        nodes.begin()->prev = &*nodes.rbegin();
+    }
+
+    return nodes;
 }
