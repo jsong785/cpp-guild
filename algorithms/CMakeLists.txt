@@ -5,6 +5,7 @@ find_package(Catch REQUIRED)
 add_executable(algorithms 
                main.cpp 
                LinkedListTest.cpp
+               MatrixTest.cpp
                MostOccuringItemTest.cpp
                StringUtilsTest.cpp
                SelectionSortTest.cpp)
