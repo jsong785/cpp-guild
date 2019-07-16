@@ -5,9 +5,7 @@
 
 namespace Matrix {
 
-// this would not work if matrix N*N overflows int
-// Todo: ensure T is numeric
-template <typename T, int N>
+template <typename T, unsigned N>
 constexpr std::vector<T> TraverseMatrixSpiral(const T (&matrix)[N][N]) {
     std::vector<T> traverse;
 
