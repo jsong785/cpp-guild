@@ -1,12 +1,13 @@
 #pragma once
 
 #include <tuple>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace Matrix {
 
-// to do: T is numeric
-template <typename T, unsigned N, typename SumFunc, typename AoiFunc>
+template <typename T, unsigned N, typename SumFunc, typename AoiFunc, typename = typename std::enable_if_t<std::is_arithmetic<T>::value>>
 constexpr T GetGenericShapeMaxSum(T (&&matrix)[N][N], SumFunc &&sumFunc, AoiFunc &&aoiFunc) {
     auto init{ false };
     T sum{};
@@ -29,7 +30,7 @@ constexpr T GetGenericShapeMaxSum(T (&&matrix)[N][N], SumFunc &&sumFunc, AoiFunc
     return sum;
 }
 
-template <typename T, unsigned N>
+template <typename T, unsigned N, typename = typename std::enable_if_t<std::is_arithmetic<T>::value>>
 constexpr T GetHourglassMaxSum(T (&&matrix)[N][N]) {
     const auto aoi = []() {
         return std::make_tuple(3, 3);
@@ -41,12 +42,13 @@ constexpr T GetHourglassMaxSum(T (&&matrix)[N][N]) {
                matrix[row+2][col] + matrix[row+2][col+1] + matrix[row+2][col+2];
     };
 
-    return GetGenericShapeMaxSum(std::forward<T[N][N]>matrix, sum, aoi);
+    return GetGenericShapeMaxSum(std::forward<T[N][N]>(matrix), sum, aoi);
 }
 
 template <typename T, unsigned N>
 constexpr std::vector<T> TraverseMatrixSpiral(T (&&matrix)[N][N]) {
     std::vector<T> traverse;
+    traverse.reserve(N*N);
 
     unsigned row0{ 0 };
     unsigned col0{ 0 };
