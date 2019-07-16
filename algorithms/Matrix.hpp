@@ -7,7 +7,7 @@ namespace Matrix {
 
 // to do: T is numeric
 template <typename T, unsigned N, typename SumFunc, typename AoiFunc>
-constexpr T GetGenericShapeMaxSum(T (&matrix)[N][N], SumFunc &&sumFunc, AoiFunc &&aoiFunc) {
+constexpr T GetGenericShapeMaxSum(T (&&matrix)[N][N], SumFunc &&sumFunc, AoiFunc &&aoiFunc) {
     auto init{ false };
     T sum{};
 
@@ -41,7 +41,7 @@ constexpr T GetHourglassMaxSum(T (&&matrix)[N][N]) {
                matrix[row+2][col] + matrix[row+2][col+1] + matrix[row+2][col+2];
     };
 
-    return GetGenericShapeMaxSum(matrix, sum, aoi);
+    return GetGenericShapeMaxSum(std::forward<T[N][N]>matrix, sum, aoi);
 }
 
 template <typename T, unsigned N>
