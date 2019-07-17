@@ -12,53 +12,66 @@ namespace {
         Doubly *prev{ nullptr };
     };
 
-    template <typename T>
-    class SinglyLinkedListRaii {
-        public:
-            SinglyLinkedListRaii(const unsigned amt, const bool circular) :
-                m_nodes{Create(amt, circular)} {}
-            SinglyLinkedListRaii(const SinglyLinkedListRaii&) = delete;
-            SinglyLinkedListRaii(SinglyLinkedListRaii&&) = delete;
-            ~SinglyLinkedListRaii() = default;
+    // slow is ok for these unit tests
+    template <typename T, unsigned N>
+    std::vector<T> CreateSinglyLinkedList(const bool circular) {
+        std::vector<T> nodes;
+        nodes.resize(N);
 
-            SinglyLinkedListRaii& operator=(const SinglyLinkedListRaii&) = delete;
-            SinglyLinkedListRaii& operator=(SinglyLinkedListRaii&&) = delete;
+        for(auto iter{ nodes.begin() }; iter != nodes.end(); ++iter) {
+            T* next{ nullptr };
 
-            T* operator[](const unsigned n)
-            { return &m_nodes[n]; }
+            auto nextIter{ std::next(iter) };
+            if(nextIter != nodes.end()) {
+                next = &*nextIter;
+            }
 
-        private:
-            std::vector<T> Create(const unsigned amt, const bool circular);
+            iter->next = next;
+        }
 
-            std::vector<T> m_nodes;
-    };
+        if(circular) {
+            nodes.rbegin()->next = &*nodes.begin();
+        }
 
-    template <typename T>
-    class DoublyLinkedListRaii {
-        public:
-            DoublyLinkedListRaii(const unsigned amt, const bool circular) :
-                m_nodes{Create(amt, circular)} {}
-            DoublyLinkedListRaii(const DoublyLinkedListRaii&) = delete;
-            DoublyLinkedListRaii(DoublyLinkedListRaii&&) = delete;
-            ~DoublyLinkedListRaii() = default;
+        return nodes;
+    }
 
-            DoublyLinkedListRaii& operator=(const DoublyLinkedListRaii&) = delete;
-            DoublyLinkedListRaii& operator=(DoublyLinkedListRaii&&) = delete;
 
-            T* operator[](const unsigned n)
-            { return &m_nodes[n]; }
+    template <typename T, unsigned N>
+    std::vector<T> CreateDoublyLinkedList(const bool circular) {
+        std::vector<T> nodes;
+        nodes.resize(N);
 
-        private:
-            std::vector<T> Create(const unsigned amt, const bool circular);
-            
-            std::vector<T> m_nodes;
-    };
+        for(auto iter{ nodes.begin() }; iter != nodes.end(); ++iter) {
+            T* next{ nullptr };
 
-    template <typename T>
-    using SLR = SinglyLinkedListRaii<T>;
+            auto nextIter{ std::next(iter) };
+            if(nextIter != nodes.end()) {
+                next = &*nextIter;
+            }
 
-    template <typename T>
-    using DLR = DoublyLinkedListRaii<T>;
+            iter->next = next;
+
+            T* prev{ nullptr };
+            if(iter != nodes.begin()) {
+                prev = &*std::prev(iter);
+            }
+            iter->prev = prev;
+        }
+
+        if(circular) {
+            nodes.rbegin()->next = &*nodes.begin();
+            nodes.begin()->prev = &*nodes.rbegin();
+        }
+
+        return nodes;
+    }
+
+    template <typename T, unsigned N>
+    const auto SLR{  CreateSinglyLinkedList<T, N> };
+
+    template <typename T, unsigned N>
+    const auto DLR{  CreateDoublyLinkedList<T, N> };
 }
 
 TEST_CASE("Singly Linked (non-circular)", "[LinkedList]")
@@ -71,17 +84,18 @@ TEST_CASE("Singly Linked (non-circular)", "[LinkedList]")
 
     SECTION("single")
     {
-        SLR<Singly> list{1, false};
-        auto head{ list[0] };
+        auto list { SLR<Singly, 1>(false) };
+        auto head{ &list[0] };
         CHECK(ReverseSinglyLinkedListNonCircular(head) == head);
     }
 
     SECTION("two")
     {
-        SLR<Singly> list{2, false};
+        auto list{ SLR<Singly, 2>(false) };
 
-        auto head = list[0];
-        auto tail = list[1];
+        auto head{ &list[0] };
+        auto tail{ &list[1] };
+
         CHECK(ReverseSinglyLinkedListNonCircular(head) == tail);
 
         CHECK(tail->next == head);
@@ -90,11 +104,11 @@ TEST_CASE("Singly Linked (non-circular)", "[LinkedList]")
 
     SECTION("three")
     {
-        SLR<Singly> list{3, false};
+        auto list{ SLR<Singly, 3>(false) };
 
-        auto head = list[0];
-        auto middle = list[1];
-        auto tail = list[2];
+        auto head = &list[0];
+        auto middle = &list[1];
+        auto tail = &list[2];
 
         CHECK(ReverseSinglyLinkedListNonCircular(head) == tail);
 
@@ -114,16 +128,16 @@ TEST_CASE("Singly Linked (circular)", "[LinkedList]")
 
     SECTION("single")
     {
-        SLR<Singly> list{1, true};
-        auto head{ list[0] };
+        auto list{ SLR<Singly, 1>(true) };
+        auto head{ &list[0] };
         CHECK(ReverseSinglyLinkedListCircular(head) == head);
     }
 
     SECTION("two")
     {
-        SLR<Singly> list{2, true};
-        auto head{ list[0] };
-        auto tail{ list[1] };
+        auto list{ SLR<Singly, 2>(true) };
+        auto head{ &list[0] };
+        auto tail{ &list[1] };
 
         CHECK(ReverseSinglyLinkedListCircular(head) == tail);
 
@@ -133,10 +147,10 @@ TEST_CASE("Singly Linked (circular)", "[LinkedList]")
 
     SECTION("three")
     {
-        SLR<Singly> list{3, true};
-        auto head{ list[0] };
-        auto middle{ list[1] };
-        auto tail{ list[2] };
+        auto list{ SLR<Singly, 3>(true) };
+        auto head{ &list[0] };
+        auto middle{ &list[1] };
+        auto tail{ &list[2] };
 
         CHECK(ReverseSinglyLinkedListCircular(head) == tail);
 
@@ -156,17 +170,16 @@ TEST_CASE("Doubly Linked (non-circular)", "[LinkedList]")
 
     SECTION("single")
     {
-        DLR<Doubly> list{1, false};
-        auto head{ list[0] };
+        auto list{ DLR<Doubly, 1>(false) };
+        auto head{ &list[0] };
         CHECK(ReverseDoublyLinkedListNonCircular(head) == head);
     }
 
     SECTION("two")
     {
-        DLR<Doubly> list{2, false};
-
-        auto head{ list[0] };
-        auto tail{ list[1] };
+        auto list{ DLR<Doubly, 2>(false) };
+        auto head{ &list[0] };
+        auto tail{ &list[1] };
         CHECK(ReverseDoublyLinkedListNonCircular(head) == tail);
 
         CHECK(tail->next == head);
@@ -178,10 +191,10 @@ TEST_CASE("Doubly Linked (non-circular)", "[LinkedList]")
 
     SECTION("three")
     {
-        DLR<Doubly> list{3, false};
-        auto head{ list[0] };
-        auto middle{ list[1] };
-        auto tail{ list[2] };
+        auto list{ DLR<Doubly, 3>(false) };
+        auto head{ &list[0] };
+        auto middle{ &list[1] };
+        auto tail{ &list[2] };
 
         CHECK(ReverseDoublyLinkedListNonCircular(head) == tail);
 
@@ -205,8 +218,8 @@ TEST_CASE("Doubly Linked (circular)", "[LinkedList]")
 
     SECTION("single")
     {
-        DLR<Doubly> list{1, true};
-        auto head{ list[0] };
+        auto list{ DLR<Doubly, 1>(true) };
+        auto head{ &list[0] };
 
         CHECK(ReverseDoublyLinkedListCircular(head) == head);
         CHECK(head->next == head);
@@ -215,9 +228,9 @@ TEST_CASE("Doubly Linked (circular)", "[LinkedList]")
 
     SECTION("two")
     {
-        DLR<Doubly> list{2, true};
-        auto head{ list[0] };
-        auto tail{ list[1] };
+        auto list{ DLR<Doubly, 2>(true) };
+        auto head{ &list[0] };
+        auto tail{ &list[1] };
 
         CHECK(ReverseDoublyLinkedListCircular(head) == tail);
 
@@ -230,16 +243,15 @@ TEST_CASE("Doubly Linked (circular)", "[LinkedList]")
 
     SECTION("three")
     {
-        DLR<Doubly> list{3, true};
-        auto head{ list[0] };
-        auto middle{ list[1] };
-        auto tail{ list[2] };
+        auto list{ DLR<Doubly, 3>(true) };
+        auto head{ &list[0] };
+        auto middle{ &list[1] };
+        auto tail{ &list[2] };
 
         CHECK(ReverseDoublyLinkedListCircular(head) == tail);
 
         CHECK(tail->next == middle);
-        CHECK(middle->next == head);
-        CHECK(head->next == tail);
+        CHECK(middle->next == head); CHECK(head->next == tail);
 
         CHECK(head->prev == middle);
         CHECK(middle->prev == tail);
@@ -259,8 +271,8 @@ TEST_CASE("Return N from end Singly Linked (non-circular)", "[LinkedList]")
 
     SECTION("single")
     {
-        SLR<Singly> list{1, false};
-        auto head{ list[0] };
+        auto list{ SLR<Singly, 1>(false) };
+        auto head{ &list[0] };
 
         Singly* parent{ nullptr };
         auto node = GetNFromEndSinglyLinkedListNonCircular(head, 0, &parent);
@@ -278,9 +290,9 @@ TEST_CASE("Return N from end Singly Linked (non-circular)", "[LinkedList]")
 
     SECTION("two")
     {
-        SLR<Singly> list{2, false};
-        auto head{ list[0] };
-        auto tail{ list[1] };
+        auto list{ SLR<Singly, 2>(false) };
+        auto head{ &list[0] };
+        auto tail{ &list[1] };
 
         Singly* parent{ nullptr };
         auto node = GetNFromEndSinglyLinkedListNonCircular(head, 0, &parent);
@@ -298,10 +310,10 @@ TEST_CASE("Return N from end Singly Linked (non-circular)", "[LinkedList]")
 
     SECTION("three")
     {
-        SLR<Singly> list{3, false};
-        auto head{ list[0] };
-        auto middle{ list[1] };
-        auto tail{ list[2] };
+        auto list{ SLR<Singly, 3>(false) };
+        auto head{ &list[0] };
+        auto middle{ &list[1] };
+        auto tail{ &list[2] };
 
         Singly* parent{ nullptr };
         auto node = GetNFromEndSinglyLinkedListNonCircular(head, 0, &parent);
@@ -337,8 +349,8 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
     SECTION("single")
     {
         {
-            SLR<Singly> list{1, false};
-            auto head{ list[0] };
+            auto list{ SLR<Singly, 1>(false) };
+            auto head{ &list[0] };
 
             Singly *toDelete{ nullptr };
             const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 0, &toDelete);
@@ -347,8 +359,8 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
         }
 
         {
-            SLR<Singly> list{1, false};
-            auto head{ list[0] };
+            auto list{ SLR<Singly, 1>(false) };
+            auto head{ &list[0] };
 
             Singly *toDelete{ nullptr };
             const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 1, &toDelete);
@@ -357,8 +369,8 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
         }
 
         {
-            SLR<Singly> list{1, false};
-            auto head{ list[0] };
+            auto list{ SLR<Singly, 1>(false) };
+            auto head{ &list[0] };
 
             Singly *toDelete{ nullptr };
             const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 2, &toDelete);
@@ -370,9 +382,9 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
     SECTION("two")
     {
         {
-            SLR<Singly> list{2, false};
-            auto head{ list[0] };
-            auto tail{ list[1] };
+            auto list{ SLR<Singly, 2>(false) };
+            auto head{ &list[0] };
+            auto tail{ &list[1] };
 
             Singly *toDelete{ nullptr };
             const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 0, &toDelete);
@@ -381,9 +393,9 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
         }
 
         {
-            SLR<Singly> list{2, false};
-            auto head{ list[0] };
-            auto tail{ list[1] };
+            auto list{ SLR<Singly, 2>(false) };
+            auto head{ &list[0] };
+            auto tail{ &list[1] };
 
             Singly *toDelete{ nullptr };
             const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 1, &toDelete);
@@ -392,9 +404,9 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
         }
 
         {
-            SLR<Singly> list{2, false};
-            auto head{ list[0] };
-            auto tail{ list[1] };
+            auto list{ SLR<Singly, 2>(false) };
+            auto head{ &list[0] };
+            auto tail{ &list[1] };
 
             Singly *toDelete{ nullptr };
             const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 2, &toDelete);
@@ -406,10 +418,10 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
     SECTION("three")
     {
         {
-            SLR<Singly> list{3, false};
-            auto head{ list[0] };
-            auto middle{ list[1] };
-            auto tail{ list[2] };
+            auto list{ SLR<Singly, 3>(false) };
+            auto head{ &list[0] };
+            auto middle{ &list[1] };
+            auto tail{ &list[2] };
 
             Singly *toDelete{ nullptr };
             const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 0, &toDelete);
@@ -418,10 +430,10 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
         }
 
         {
-            SLR<Singly> list{3, false};
-            auto head{ list[0] };
-            auto middle{ list[1] };
-            auto tail{ list[2] };
+            auto list{ SLR<Singly, 3>(false) };
+            auto head{ &list[0] };
+            auto middle{ &list[1] };
+            auto tail{ &list[2] };
 
             Singly *toDelete{ nullptr };
             const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 1, &toDelete);
@@ -430,10 +442,10 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
         }
 
         {
-            SLR<Singly> list{3, false};
-            auto head{ list[0] };
-            auto middle{ list[1] };
-            auto tail{ list[2] };
+            auto list{ SLR<Singly, 3>(false) };
+            auto head{ &list[0] };
+            auto middle{ &list[1] };
+            auto tail{ &list[2] };
 
             Singly *toDelete{ nullptr };
             const auto node = DeleteNFromEndSinglyLinkedListNonCircular(head, 2, &toDelete);
@@ -441,58 +453,4 @@ TEST_CASE("Delete N from end Singly Linked (non-circular)", "[LinkedList]")
             CHECK(toDelete == head);
         }
     }
-}
-
-// slow is ok for these unit tests
-template <typename T>
-std::vector<T> SinglyLinkedListRaii<T>::Create(const unsigned amt, const bool circular) {
-    std::vector<T> nodes(amt);
-    nodes.resize(amt);
-
-    for(auto iter{ nodes.begin() }; iter != nodes.end(); ++iter) {
-        T* next{ nullptr };
-
-        auto nextIter{ std::next(iter) };
-        if(nextIter != nodes.end()) {
-            next = &*nextIter;
-        }
-
-        iter->next = next;
-    }
-
-    if(circular) {
-        nodes.rbegin()->next = &*nodes.begin();
-    }
-
-    return nodes;
-}
-
-template <typename T>
-std::vector<T> DoublyLinkedListRaii<T>::Create(const unsigned amt, const bool circular) {
-    std::vector<T> nodes(amt);
-    nodes.resize(amt);
-
-    for(auto iter{ nodes.begin() }; iter != nodes.end(); ++iter) {
-        T* next{ nullptr };
-
-        auto nextIter{ std::next(iter) };
-        if(nextIter != nodes.end()) {
-            next = &*nextIter;
-        }
-
-        iter->next = next;
-
-        T* prev{ nullptr };
-        if(iter != nodes.begin()) {
-            prev = &*std::prev(iter);
-        }
-        iter->prev = prev;
-    }
-
-    if(circular) {
-        nodes.rbegin()->next = &*nodes.begin();
-        nodes.begin()->prev = &*nodes.rbegin();
-    }
-
-    return nodes;
 }
