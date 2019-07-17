@@ -8,6 +8,7 @@ add_executable(algorithms
                MatrixTest.cpp
                MostOccuringItemTest.cpp
                StringUtilsTest.cpp
-               SelectionSortTest.cpp)
+               SelectionSortTest.cpp
+               TreeTest.cpp)
 set_property(TARGET algorithms PROPERTY CXX_STANDARD 14)
 target_link_libraries(algorithms Catch)
