@@ -85,3 +85,50 @@ TEST_CASE("Invert binary tree", "[tree]")
     }
 }
 
+TEST_CASE("Priority Heap", "[tree]") {
+    SECTION("Compare Empty")
+    {
+        CHECK(PriorityHeap<int>{}.empty());
+        CHECK(!PriorityHeap<int>{{1}}.empty());
+    }
+
+    SECTION("Compare Min") {
+        CHECK(PriorityHeap<int>{{1}}.min() == 1);
+        CHECK(PriorityHeap<int>{{1, 2, 3, 4, 5}}.min() == 1);
+        CHECK(PriorityHeap<int>{{5, 4, 3, 2, 1}}.min() == 1);
+        CHECK(PriorityHeap<int>{{4, 5, 1, 3, -1, 10}}.min() == -1);
+    }
+
+    SECTION("Pop Min 1") {
+        PriorityHeap<int> heap{{1, 2, 3, 4, 5}};
+        CHECK(heap.pop() == 1); CHECK(!heap.empty());
+        CHECK(heap.pop() == 2); CHECK(!heap.empty());
+        CHECK(heap.pop() == 3); CHECK(!heap.empty());
+        CHECK(heap.pop() == 4); CHECK(!heap.empty());
+        CHECK(heap.pop() == 5); CHECK(heap.empty());
+    }
+
+    SECTION("Pop Min 2") {
+        PriorityHeap<int> heap{{4, 5, 1, 3, -1, 10}};
+        CHECK(heap.pop() == -1); CHECK(!heap.empty());
+        CHECK(heap.pop() == 1); CHECK(!heap.empty());
+        CHECK(heap.pop() == 3); CHECK(!heap.empty());
+        CHECK(heap.pop() == 4); CHECK(!heap.empty());
+        CHECK(heap.pop() == 5); CHECK(!heap.empty());
+        CHECK(heap.pop() == 10); CHECK(heap.empty());
+    }
+
+    SECTION("Insert") {
+        PriorityHeap<int> heap;
+        for(const auto i : {4, 5, 1, 3, -1, 10}) {
+            heap.Insert(i);
+        }
+        CHECK(heap.pop() == -1); CHECK(!heap.empty());
+        CHECK(heap.pop() == 1); CHECK(!heap.empty());
+        CHECK(heap.pop() == 3); CHECK(!heap.empty());
+        CHECK(heap.pop() == 4); CHECK(!heap.empty());
+        CHECK(heap.pop() == 5); CHECK(!heap.empty());
+        CHECK(heap.pop() == 10); CHECK(heap.empty());
+    }
+}
+
