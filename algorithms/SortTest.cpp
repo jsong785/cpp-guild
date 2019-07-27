@@ -2,7 +2,7 @@
 #include <utility>
 #include <assert.h>
 
-#include "SelectionSort.hpp"
+#include "Sort.hpp"
 #include "StringUtils.hpp"
 
 namespace {
@@ -39,5 +39,43 @@ TEST_CASE("SelectionSort", "[sort]")
         CHECK(CopySortCompare("CBA", "ABC"));
         CHECK(CopySortCompare(u"CBA", u"ABC"));
         CHECK(CopySortCompare(U"CBA", U"ABC"));
+    }
+}
+
+/*TEST_CASE("InsertionSort", "[sort]")
+{
+    using namespace Sort;
+    SECTION("empty")
+    {
+        std::vector<int> blah{ 1, 2, 3};
+        CHECK(InsertionSort<int, std::vector<int>>(blah).empty());
+    }
+
+    SECTION("single item")
+    {
+    }
+
+    SECTION("multiple items")
+    {
+    }
+}*/
+
+TEST_CASE("MergeSort", "[sort]")
+{
+    using namespace Sort;
+    SECTION("empty")
+    {
+        CHECK(MergeSort(std::vector<int>{}).empty());
+    }
+
+    SECTION("single item")
+    {
+        CHECK(operator==(MergeSort(std::vector<int>{0}), {0}));
+        CHECK(operator==(MergeSort(std::vector<int>{1}), {1}));
+    }
+
+    SECTION("multiple items")
+    {
+        CHECK(operator==(MergeSort(std::vector<int>{0, 5, 4, 2, 3, 9, 10}), {0, 2, 3, 4, 5, 9, 10}));
     }
 }
