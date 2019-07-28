@@ -95,4 +95,36 @@ constexpr T MergeSort(T &&list) {
     return list;
 }
 
+template <typename Iter>
+constexpr Iter Partition(Iter low, Iter high) {
+    auto pivot = high;
+    auto firstHigh = low;
+    for(auto i = low; i != pivot; ++i) {
+        if(*i < *pivot) {
+            std::swap(*i, *firstHigh++);
+        }
+    }
+    std::swap(*firstHigh, *pivot);
+    return firstHigh;
+}
+
+template <typename Iter>
+constexpr void QuickSort(Iter low, Iter high) {
+    if(low < high) {
+        auto partition = Partition(low, high);
+        QuickSort(low, std::prev(partition));
+        QuickSort(std::next(partition), high);
+    }
+}
+
+template <typename T>
+constexpr T QuickSort(T &&list) {
+    if(!list.empty()) {
+        auto copy = std::forward<T>(list);
+        QuickSort(copy.begin(), std::prev(copy.end()));
+        return copy;
+    }
+    return list;
+}
+
 } // namespace Sort

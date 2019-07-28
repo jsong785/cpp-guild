@@ -7,6 +7,7 @@ add_executable(algorithms
                LinkedListTest.cpp
                MatrixTest.cpp
                MostOccuringItemTest.cpp
+               SearchTest.cpp
                StringUtilsTest.cpp
                SortTest.cpp
                TreeTest.cpp)

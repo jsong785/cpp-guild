@@ -79,5 +79,27 @@ TEST_CASE("MergeSort", "[sort]")
     SECTION("multiple items")
     {
         CHECK(operator==(MergeSort(std::vector<int>{0, 5, 4, 2, 3, 9, 10}), {0, 2, 3, 4, 5, 9, 10}));
+        CHECK(operator==(MergeSort(std::vector<int>{0, 5, 4, 10, 3, 9, 2}), {0, 2, 3, 4, 5, 9, 10}));
+    }
+}
+
+TEST_CASE("QuickSort", "[sort]")
+{
+    using namespace Sort;
+    SECTION("empty")
+    {
+        CHECK(QuickSort(std::vector<int>{}).empty());
+    }
+
+    SECTION("single item")
+    {
+        CHECK(operator==(QuickSort(std::vector<int>{0}), {0}));
+        CHECK(operator==(QuickSort(std::vector<int>{1}), {1}));
+    }
+
+    SECTION("multiple items")
+    {
+        CHECK(operator==(QuickSort(std::vector<int>{0, 5, 4, 2, 3, 9, 10}), {0, 2, 3, 4, 5, 9, 10}));
+        CHECK(operator==(QuickSort(std::vector<int>{0, 5, 4, 10, 3, 9, 2}), {0, 2, 3, 4, 5, 9, 10}));
     }
 }
