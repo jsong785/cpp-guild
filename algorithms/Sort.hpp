@@ -3,7 +3,6 @@
 #include <deque>
 #include <iterator>
 #include <vector>
-#include <iostream>
 
 namespace Sort{
 
@@ -20,21 +19,26 @@ constexpr void SelectionSort(T *str, const unsigned len) {
     }
 }
 
-/*template <typename T, template<typename> typename InputList>
-constexpr auto InsertionSort(const InputList<T> &list) {
-    std::vector<T> sorted;
+template <typename InputList, typename InputListType = typename InputList::value_type>
+constexpr auto InsertionSort(InputList &&list) {
+    std::vector<InputListType> sorted;
     sorted.reserve(list.size());
 
     for(const auto &l : list) {
-        for(auto i = std::begin(sorted); i != std::end(sorted); ++i) {
-            if(l < i) {
-                sorted.emplace(i, l);
+        auto sortedIter = std::begin(sorted);
+        for(; sortedIter != std::end(sorted); ++sortedIter) {
+            if(l < *sortedIter) {
+                sorted.emplace(sortedIter, l);
+                break;
             }
+        }
+        if(sortedIter == std::end(sorted)) {
+            sorted.emplace_back(l);
         }
     }
 
     return sorted;
-}*/
+}
 
 template <typename Iter, typename IterType = typename Iter::value_type>
 constexpr void Merge(Iter low, Iter mid, Iter high) {

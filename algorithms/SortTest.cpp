@@ -42,23 +42,25 @@ TEST_CASE("SelectionSort", "[sort]")
     }
 }
 
-/*TEST_CASE("InsertionSort", "[sort]")
+TEST_CASE("InsertionSort", "[sort]")
 {
     using namespace Sort;
     SECTION("empty")
     {
-        std::vector<int> blah{ 1, 2, 3};
-        CHECK(InsertionSort<int, std::vector<int>>(blah).empty());
+        CHECK(InsertionSort(std::vector<int>{}).empty());
     }
 
     SECTION("single item")
     {
+        CHECK(operator==(InsertionSort(std::vector<int>{0}), {0}));
+        CHECK(operator==(InsertionSort(std::vector<int>{1}), {1}));
     }
 
     SECTION("multiple items")
     {
+        CHECK(operator==(InsertionSort(std::vector<int>{5, 10, 9, -1, 0, 4}), {-1, 0, 4, 5, 9, 10}));
     }
-}*/
+}
 
 TEST_CASE("MergeSort", "[sort]")
 {
