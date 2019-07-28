@@ -59,12 +59,13 @@ constexpr std::vector<T> TraverseMatrixSpiral(T (&&matrix)[N][N]) {
     unsigned currentRow{ 0 };
     unsigned currentCol{ 0 };
 
-    unsigned dir{ 0 };
+    enum class Direction{ Right, Down, Left, Up };
+    auto dir{ Direction::Right };
     for(unsigned i{ 0 }; i < N*N; ++i) {
         traverse.emplace_back(matrix[currentRow][currentCol]);
 
         switch(dir) {
-            case 0: // RIGHT
+            case Direction::Right:
             {
                 if(currentCol != col1) {
                     ++currentCol;
@@ -72,11 +73,11 @@ constexpr std::vector<T> TraverseMatrixSpiral(T (&&matrix)[N][N]) {
                 else {
                     ++row0;
                     ++currentRow;
-                    dir = 1;
+                    dir = Direction::Down;
                 }
             }
             break;
-            case 1: // DOWN
+            case Direction::Down:
             {
                 if(currentRow != row1) {
                     ++currentRow;
@@ -84,11 +85,11 @@ constexpr std::vector<T> TraverseMatrixSpiral(T (&&matrix)[N][N]) {
                 else {
                     --col1;
                     --currentCol;
-                    dir = 2;
+                    dir = Direction::Left;
                 }
             }
             break;
-            case 2: // LEFT
+            case Direction::Left:
             {
                 if(currentCol != col0) {
                     --currentCol;
@@ -96,11 +97,11 @@ constexpr std::vector<T> TraverseMatrixSpiral(T (&&matrix)[N][N]) {
                 else {
                     --row1;
                     --currentRow;
-                    dir = 3;
+                    dir = Direction::Up;
                 }
             }
             break;
-            case 3: // UP
+            case Direction::Up:
             {
                 if(currentRow != row0) {
                     --currentRow;
@@ -108,7 +109,7 @@ constexpr std::vector<T> TraverseMatrixSpiral(T (&&matrix)[N][N]) {
                 else {
                     ++row0;
                     ++currentCol;
-                    dir = 0;
+                    dir = Direction::Right;
                 }
 
             }
