@@ -67,14 +67,12 @@ bool ShouldEscape(const char c) {
     return ShouldEscape.find(c) != std::string::npos;
 }
 
-
 std::string CleanString(std::string val) {
-    for(auto c{ val.begin() }; c != val.end(); ) {
+    for(auto c{ val.begin() }; c != val.end(); ++c) {
         if(ShouldEscape(*c)) {
             c = val.insert(c, '\\');
             ++c;
         }
-        ++c;
     }
     return val;
 }
