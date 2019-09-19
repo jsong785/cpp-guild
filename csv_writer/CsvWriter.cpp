@@ -9,7 +9,8 @@ CsvWriter::CsvWriter(std::iostream &output, const char delimiter, const unsigned
     , m_numFields{numFields} {
 }
 
-CsvWriter::~CsvWriter() { Flush();
+CsvWriter::~CsvWriter() { 
+    Flush();
 }
 
 void CsvWriter::Push(const char val) {
