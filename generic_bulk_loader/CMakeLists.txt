@@ -5,6 +5,7 @@ find_package(Catch REQUIRED)
 add_executable(generic_bulk_loader 
                main.cpp 
                SnowflakeLocalStage.cpp
+               utilities/CsvWriter.cpp
                TestSnowflakeLocalStage.cpp)
 set_property(TARGET generic_bulk_loader PROPERTY CXX_STANDARD 14)
 target_link_libraries(generic_bulk_loader Catch)
