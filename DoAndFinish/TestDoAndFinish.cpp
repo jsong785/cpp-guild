@@ -41,4 +41,24 @@ TEST_CASE("DoAndFinish Primitive", "")
 
 TEST_CASE("DoAndFinish With Arguments", "")
 {
+    int doCount{ 0 };
+    int finishCount{ 0 };
+
+    const auto doFunc{ 
+        DoAndFinish(
+                [&doCount](const auto injectDoCount){ doCount = injectDoCount; }, 
+                [&doCount](){ return (doCount%2) != 0; },
+                [&finishCount](const auto injectDoCount){ finishCount = injectDoCount; }
+                ) 
+    };
+
+    CHECK(doCount == 0);
+    CHECK(finishCount == 0);
+
+    doFunc(0);
+    CHECK(finishCount == 0);
+
+    doFunc(2);
+    CHECK(finishCount == 0);
+    CHECK(doCount == 2);
 }

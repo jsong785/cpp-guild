@@ -1,7 +1,14 @@
 #pragma once
+#include <functional>
 
-template <typename Do, typename ...DoFuncArgs, typename ShouldFinish, typename Finish>
-auto DoAndFinish( Do &&doFunc(DoFuncArgs...), ShouldFinish &&shouldFinishFunc, Finish &&finishFunc(DoFuncArgs...)) 
+template <
+    typename ...DoFuncArgs,
+    typename ShouldFinish,
+    typename Finish>
+auto DoAndFinish(
+     std::function<void(DoFuncArgs)> doFunc,
+     ShouldFinish &&shouldFinishFunc,
+     std::function<void(DoFuncArgs)> finishFunc) 
 {
     return [ doFunc{std::forward<Do>(doFunc)}, 
              shouldFinishFunc{std::forward<ShouldFinish>(shouldFinishFunc)},
@@ -12,5 +19,6 @@ auto DoAndFinish( Do &&doFunc(DoFuncArgs...), ShouldFinish &&shouldFinishFunc, F
                      finishFunc(args...);
                  }
                  doFunc(args...);
+                 return finishFunc;
              };
 }
