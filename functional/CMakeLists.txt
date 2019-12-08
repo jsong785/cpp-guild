@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5.1)
-project(currying VERSION 1.0 LANGUAGES CXX)
+project(functional VERSION 1.0 LANGUAGES CXX)
 
 find_package(Catch REQUIRED)
-add_executable(currying
+add_executable(functional
                main.cpp 
                currying.cpp)
-set_property(TARGET currying PROPERTY CXX_STANDARD 14)
-target_link_libraries(currying Catch)
+set_property(TARGET functional PROPERTY CXX_STANDARD 14)
+target_link_libraries(functional Catch)
