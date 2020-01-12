@@ -55,7 +55,7 @@ std::string TrimRight(std::string val) {
 }
 
 std::string Trim(std::string val) {
-    return TrimLeft(TrimRight(val));
+    return TrimLeft(TrimRight(std::move(val)));
 }
 
 
