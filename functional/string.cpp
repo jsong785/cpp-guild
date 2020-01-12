@@ -3,7 +3,7 @@
 #include <cctype>
 #include <functional>
 
-static bool isspacebool(const int c);
+static bool IsSpacebool(const int c);
 static std::string TrimLeft(std::string val);
 static std::string TrimRight(std::string val);
 static std::string Trim(std::string val);
@@ -32,26 +32,25 @@ TEST_CASE("Trim")
     CHECK(Trim("  abc") == "abc");
 }
 
-bool isspacebool(const int c) {
-    return isspace(c) != 0;
+bool IsNotSpaceBool(const int c)
+{
+    return isspace(c) == 0;
 }
 
 std::string TrimLeft(std::string val) {
-    return { 
-        std::make_move_iterator(std::find_if(val.begin(), val.end(), [](const auto c){ 
-            return std::logical_not<bool>()(isspacebool(c)); 
-        })),
-        std::make_move_iterator(val.end())
-    }; 
+    const auto eraseEnd{ std::find_if(val.cbegin(), val.cend(), IsNotSpaceBool) };
+    if(val.begin() != eraseEnd) {
+        val.erase(val.begin(), eraseEnd);
+    }
+    return val;
 }
 
 std::string TrimRight(std::string val) {
-    return { 
-        std::make_move_iterator(val.begin()),
-        std::make_move_iterator(std::find_if(val.rbegin(), val.rend(), [](const auto c){
-            return std::logical_not<bool>()(isspacebool(c));
-        }).base())
-    }; 
+    const auto eraseStart{ std::find_if(val.crbegin(), val.crend(), IsNotSpaceBool).base() };
+    if(eraseStart != val.cend()) {
+        val.erase(eraseStart, val.cend());
+    }
+    return val;
 }
 
 std::string Trim(std::string val) {
