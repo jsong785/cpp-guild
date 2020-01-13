@@ -5,6 +5,7 @@ find_package(Catch REQUIRED)
 add_executable(functional
                main.cpp 
                currying.cpp
+               recursion.cpp
                string.cpp)
 set_property(TARGET functional PROPERTY CXX_STANDARD 14)
 target_link_libraries(functional Catch)
