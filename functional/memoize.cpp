@@ -20,13 +20,12 @@ template <typename Result, typename ...Args>
 static auto make_memoized(Result (*func)(Args...)) { // does not work for recursive
     std::map<std::tuple<Args...>, Result> cache;
     return [func, cache = std::move(cache)](Args... args) mutable {
-        const auto argsTuple{ std::make_tuple(args...) };
+        auto argsTuple{ std::make_tuple(args...) };
         const auto found{ cache.find(argsTuple) };
         if(found != cache.end()) {
             return found->second;
         }
-        auto res{ func(args...) };
-        return cache.insert(std::make_pair(argsTuple, res)).first->second;
+        return cache.insert(std::make_pair(std::move(argsTuple), func(args...))).first->second;
     };
 }
 
@@ -56,6 +55,10 @@ TEST_CASE("memoize", "[.][memoize]")
         constexpr auto val{ FibonacciConstexpr(25) };
         constexpr auto val2{ FibonacciConstexpr(25) };
         constexpr auto val3{ FibonacciConstexpr(25) };
+    };
+
+    BENCHMARK("Recursive Memoization")
+    {
     };
 
     BENCHMARK("Naive memoization (non recursive)")
