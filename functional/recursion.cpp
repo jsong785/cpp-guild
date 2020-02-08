@@ -1,4 +1,4 @@
-//#define CATCH_CONFIG_ENABLE_BENCHMARKING
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include "catch.hpp"
 #include <algorithm>
 #include <chrono>
@@ -28,44 +28,38 @@ static std::vector<int> Filter(std::vector<int> list, FilterFunc &&func);
 
 static bool IsEvenNumber(const int num);
 
-TEST_CASE("Filter")
+TEST_CASE("Filter", "[.][filter]")
 {
     CHECK(Filter({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber) == std::vector<int>{1, 3, 5, 7, 9});
     CHECK(FilterTailRecursion({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber) == std::vector<int>{1, 3, 5, 7, 9});
     CHECK(FilterFolding({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber) == std::vector<int>{1, 3, 5, 7, 9});
     CHECK(FilterFoldingFast({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber) == std::vector<int>{1, 3, 5, 7, 9});
 
-    // I'd use BENCHMARK(), but I'm having trouble getting that to compile
-    auto start{ std::chrono::steady_clock::now() };
-    for(int i{ 0 }; i < 100000; ++i) {
-        Filter({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber);
-    }
-    auto end{ std::chrono::steady_clock::now() };
-    WARN("filter benchmark ran in " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+    BENCHMARK("filter") 
+    {
+        for(int i{ 0 }; i < 100000; ++i) {
+            Filter({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber);
+        }
+    };
 
-    start = std::chrono::steady_clock::now();
-    for(int i{ 0 }; i < 100000; ++i) {
-        FilterTailRecursion({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber);
-    }
-    end = std::chrono::steady_clock::now();
-    
-    WARN("filter tail recursion benchmark ran in " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+    BENCHMARK("filter tail recursion")
+    {
+        for(int i{ 0 }; i < 100000; ++i) {
+            FilterTailRecursion({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber);
+        }
+    };
 
-    start = std::chrono::steady_clock::now();
-    for(int i{ 0 }; i < 100000; ++i) {
-        FilterFolding({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber);
-    }
-    end = std::chrono::steady_clock::now();
-    
-    WARN("filter folding benchmark ran in " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+    BENCHMARK("filter folding") {
+        for(int i{ 0 }; i < 100000; ++i) {
+            FilterFolding({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber);
+        }
+    };
 
-    start = std::chrono::steady_clock::now();
-    for(int i{ 0 }; i < 100000; ++i) {
-        FilterFoldingFast({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber);
-    }
-    end = std::chrono::steady_clock::now();
-    
-    WARN("filter folding FAST benchmark ran in " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+    BENCHMARK("filter folding fast") {
+        for(int i{ 0 }; i < 100000; ++i) {
+            FilterFoldingFast({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, IsEvenNumber);
+        }
+    };
 }
 
 bool IsEvenNumber(const int num) {

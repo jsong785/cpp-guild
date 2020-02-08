@@ -4,6 +4,7 @@ project(functional VERSION 1.0 LANGUAGES CXX)
 find_package(Catch REQUIRED)
 add_executable(functional
                main.cpp 
+               memoize.cpp
                currying.cpp
                recursion.cpp
                string.cpp)
