@@ -1,6 +1,8 @@
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include "catch.hpp"
 
+#include "memoize.hpp"
+
 #include <tuple>
 #include <map>
 
@@ -11,23 +13,11 @@ static constexpr std::size_t FibonacciConstexpr(const std::size_t n) {
     return FibonacciConstexpr(n-1) + FibonacciConstexpr(n-2);
 }
 
-// this can be constexpr, but keep it run time
+// non constexpr version
 static std::size_t Fibonacci(const std::size_t n) {
     return FibonacciConstexpr(n);
 }
 
-template <typename Result, typename ...Args>
-static auto make_memoized(Result (*func)(Args...)) { // does not work for recursive
-    std::map<std::tuple<Args...>, Result> cache;
-    return [func, cache = std::move(cache)](Args... args) mutable {
-        auto argsTuple{ std::make_tuple(args...) };
-        const auto found{ cache.find(argsTuple) };
-        if(found != cache.end()) {
-            return found->second;
-        }
-        return cache.insert(std::make_pair(std::move(argsTuple), func(args...))).first->second;
-    };
-}
 
 TEST_CASE("fibonacci", "[fibonacci]")
 {
@@ -61,9 +51,21 @@ TEST_CASE("memoize", "[.][memoize]")
     {
     };
 
+    BENCHMARK("Naive memoization (non recursive, with lambdas)")
+    {
+        auto fib{ 
+            make_memoized<std::size_t(const std::size_t)>([](const std::size_t val){
+                return Fibonacci(val);
+            }) 
+        };
+        fib(25);
+        fib(25);
+        fib(25);
+    };
+
     BENCHMARK("Naive memoization (non recursive)")
     {
-        auto fib{ make_memoized(Fibonacci) };
+        auto fib{ make_memoized<std::size_t(const std::size_t)>(Fibonacci) };
         fib(25);
         fib(25);
         fib(25);
