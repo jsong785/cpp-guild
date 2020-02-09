@@ -1,5 +1,5 @@
-#include <tuple>
 #include <map>
+#include <tuple>
 
 // got this from Functional Programming in C++, this version handles lambdas however :)
 // PS: Does not work well with recursive functions, there are better optimizations to be had for that scenario.
