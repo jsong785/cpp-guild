@@ -2,7 +2,6 @@
 #include <map>
 
 // got this from Functional Programming in C++, this version handles lambdas however :)
-// I need to try to get this to use a template arg instead of std::function
 // PS: Does not work well with recursive functions, there are better optimizations to be had for that scenario.
 
 template <typename Signature, typename Func>
