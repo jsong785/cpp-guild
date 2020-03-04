@@ -8,7 +8,7 @@ namespace details {
 template <std::size_t Index, typename Callable, typename ...Args>
 void TransformTupleHelper(std::tuple<Args...> &tuple, Callable c)
 {
-    if constexpr(Index < std::tuple_size<std::tuple<Args...>>::value) {
+    if constexpr(Index < std::tuple_size<std::decay_t<decltype(tuple)>>::value) {
 	std::get<Index>(tuple) = c(std::get<Index>(tuple));
 	TransformTupleHelper<Index+1>(tuple, std::forward<Callable>(c));
     }
