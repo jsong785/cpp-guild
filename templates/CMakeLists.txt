@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.5.1)
-#set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 project(templates VERSION 1.0 LANGUAGES CXX)
 
 #find_package(Catch REQUIRED)
