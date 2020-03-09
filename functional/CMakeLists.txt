@@ -7,6 +7,7 @@ add_executable(functional
                memoize.cpp
                currying.cpp
                recursion.cpp
+               maybe_monad.cpp
                string.cpp)
 set_property(TARGET functional PROPERTY CXX_STANDARD 17)
 target_link_libraries(functional)
