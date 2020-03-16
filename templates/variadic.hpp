@@ -33,3 +33,9 @@ std::vector<T> Filter(const std::vector<T> &list, Indices... indices) {
     details::FilterHelper(ret, list[indices]...);
     return ret;
 }
+
+template <typename... Bases>
+class Overloader : Bases... {
+    public:
+        using Bases::operator()...;
+};
