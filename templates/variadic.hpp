@@ -16,11 +16,11 @@ std::stringstream ConcatDoubleStream(T... args) {
 
 namespace details {
 
-template <typename A, typename Item, typename... Items>
-void FilterHelper(A& retVector, Item item, Items... items) {
-    retVector.emplace_back(std::move(item));
+template <typename T, typename Item, typename... Items>
+void FilterHelper(std::vector<T>& vector, Item item0, Items... items) {
+    vector.emplace_back(std::move(item0));
     if constexpr(sizeof...(items) > 0) {
-        FilterHelper(retVector, items...);
+        FilterHelper(vector, items...);
     }
 }
 
