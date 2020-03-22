@@ -5,6 +5,7 @@ project(templates VERSION 1.0 LANGUAGES CXX)
 add_executable(templates
                main.cpp 
                TestFibonacci.cpp
+               TestSfinae.cpp
                TestTuple.cpp
                TestVariadic.cpp)
 set_property(TARGET templates PROPERTY CXX_STANDARD 17)
