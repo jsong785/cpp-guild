@@ -5,6 +5,7 @@ project(templates VERSION 1.0 LANGUAGES CXX)
 add_executable(templates
                main.cpp 
                TestFibonacci.cpp
+               TestNested.cpp
                TestSfinae.cpp
                TestTuple.cpp
                TestVariadic.cpp)
