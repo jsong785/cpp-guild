@@ -1,6 +1,14 @@
 #include "catch.hpp"
 #include "variadic.hpp"
 
+template <typename T>
+struct Mock {};
+
+TEST_CASE("container size helper", "[variadic]")
+{
+    CHECK(GetTotalDifferentTypes<Mock, Mock, std::vector>::val == 3);
+}
+
 TEST_CASE("variadic", "[variadic]")
 {
     CHECK(ConcatStream(1, 1, 1, 1, 1).str() == "11111");

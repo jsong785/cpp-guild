@@ -2,6 +2,27 @@
 #include <vector>
 #include <sstream>
 
+namespace details {
+
+/*template <template<typename> T0, template <typename>... T>
+auto GetTotalSizeHelper(T0 arg, T... args) -> decltype((void)(arg.size()), std::decay_t<std::result_of_t<std::declval<T0>().size()>>) {
+    if constexpr(sizeof...(args) == 0) {
+        return arg.size();
+    }
+    else {
+        const auto count{ arg.size() };
+        return arg.size() + GetTotalSizeHelper(args...);
+    }
+}
+*/
+
+}
+
+template <template<typename...>typename... Containers>
+struct GetTotalDifferentTypes {
+    static constexpr auto val{ sizeof...(Containers) };
+};
+
 template <typename... T>
 std::stringstream ConcatStream(T... args) {
     std::stringstream stream;
