@@ -4,6 +4,7 @@ project(templates VERSION 1.0 LANGUAGES CXX)
 #find_package(Catch REQUIRED)
 add_executable(templates
                main.cpp 
+               TestVirtual.cpp
                TestFibonacci.cpp
                TestNested.cpp
                TestSfinae.cpp
