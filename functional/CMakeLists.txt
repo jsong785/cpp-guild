@@ -8,6 +8,7 @@ add_executable(functional
                currying.cpp
                recursion.cpp
                maybe_monad.cpp
+               reverse_polish_notation.cpp
                string.cpp)
 set_property(TARGET functional PROPERTY CXX_STANDARD 17)
 target_link_libraries(functional)
