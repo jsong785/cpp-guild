@@ -62,15 +62,15 @@ TEST_CASE("GetData", "[rpn]")
 
 TEST_CASE("Do equation", "[rpn]")
 {
-    CHECK(DoEquation<int64_t>("1 2 *") == 2);
-    CHECK(DoEquation<int64_t>("5 10 * 100 +") == 150);
-    CHECK(DoEquation<int>("5 10 * 100 +") == 150);
+    CHECK(*DoEquation<int64_t>("1 2 *") == 2);
+    CHECK(*DoEquation<int64_t>("5 10 * 100 +") == 150);
+    CHECK(*DoEquation<int>("5 10 * 100 +") == 150);
 
-    CHECK(DoEquation<double>("5 0.5 * 100 +") == 102.5);
-    CHECK(DoEquation<double>("10 0.5 *") == 5.0);
+    CHECK(*DoEquation<double>("5 0.5 * 100 +") == 102.5);
+    CHECK(*DoEquation<double>("10 0.5 *") == 5.0);
 
-    CHECK(DoEquation<double>("10 0.5 /") == 20.0);
+    CHECK(*DoEquation<double>("10 0.5 /") == 20.0);
 
-    CHECK(DoEquation<double>("10      0.5    / ") == 20.0);
+    CHECK(*DoEquation<double>("10      0.5    / ") == 20.0);
 }
 

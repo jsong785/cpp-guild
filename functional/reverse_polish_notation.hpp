@@ -6,18 +6,19 @@
 
 namespace details {
     struct StringTokenizerState {
-        explicit StringTokenizerState(std::string val) 
-            : m_val{ std::move(val) }
-            , m_iter{ std::cbegin(m_val) }
-        {}
-
         const std::string m_val;
         std::string::const_iterator m_iter;
     };
+
+    auto GetTokenizerState(std::string val) {
+        StringTokenizerState s{ .m_val = std::move(val) };
+        s.m_iter = std::cbegin(s.m_val);
+        return s;
+    }
 }
 
 auto Tokenize(std::string val) {
-    return[tok = details::StringTokenizerState{ std::move(val) }]() mutable {
+    return[tok = details::GetTokenizerState(std::move(val))]() mutable {
         const auto start{ tok.m_iter };
         const auto foundSpace{ std::find_if(start, std::cend(tok.m_val), ::isspace) };
 
@@ -152,11 +153,48 @@ auto DoFastAccumulate(Iter begin, Iter end, T init, FoldFunc fold) {
     return init;
 }
 
+template <typename A, typename B>
+auto operator|(A&& a, B&& b) -> decltype(std::invoke(b, a)) {
+    return std::invoke(std::forward<B>(b), std::forward<A>(a));
+}
+
+template <typename A, typename B>
+auto operator|(A&& a, B&& b) -> decltype(std::invoke(b, std::begin(a), std::end(a))) {
+    return std::invoke(std::forward<B>(b), std::begin(a), std::end(a));
+}
+
+template <typename List>
+std::optional<typename List::value_type> GetFirstOnly(List l) {
+    if(l.size() == 1) {
+        return *std::cbegin(l);
+    }
+    return {};
+}
+
+template <typename T, typename D>
+std::optional<T> Maybe(std::optional<D> d) {
+    if(d) {
+        return std::get<T>(*d);
+    }
+    return {};
+}
+
 template <typename T>
 auto DoEquation(std::string operation) {
-    auto&& data{ GetData<T>( GetTokens(std::move(operation)) ) };
-    const auto result{ DoFastAccumulate(std::begin(data), std::end(data), DataVector<T>{}, Fold<T>) };
-    assert(result.size() == 1);
-    return std::get<T>(*std::cbegin(result));
+    const auto accumulate{ 
+        [](auto&& a, auto&& b){
+             return DoFastAccumulate(
+                     std::forward<decltype(a)>(a),
+                     std::forward<decltype(b)>(b),
+                     DataVector<T>{},
+                     Fold<T>
+                 );
+        }
+    };
+    return GetTokens(std::move(operation)) | 
+        GetData<T> | 
+        accumulate | 
+        GetFirstOnly<DataVector<T>> | 
+        Maybe<T, Data<T>>;
 }
 
