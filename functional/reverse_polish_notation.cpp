@@ -96,5 +96,7 @@ TEST_CASE("Do equation", "[rpn]")
     CHECK(DoEquation<double>("10 0.5 *") == 5.0);
 
     CHECK(DoEquation<double>("10 0.5 /") == 20.0);
+
+    CHECK(DoEquation<double>("10      0.5    / ") == 20.0);
 }
 
