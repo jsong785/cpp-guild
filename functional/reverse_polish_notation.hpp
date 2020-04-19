@@ -124,7 +124,7 @@ DataVector<T> Fold(DataVector<T>&& data, typename DataVector<T>::value_type&& va
                 using TDecayed = std::decay_t<T>;
                 if constexpr(std::is_same_v<VisitValDecayed, TDecayed>) {
                     auto cpy{ std::move(data) };
-                    cpy.emplace_back(visitVal);
+                    cpy.emplace_back(std::move(visitVal));
                     return cpy;
                 }
                 else if(std::is_same_v<VisitValDecayed, Operation>){
@@ -133,7 +133,7 @@ DataVector<T> Fold(DataVector<T>&& data, typename DataVector<T>::value_type&& va
                     const auto b{ std::get<TDecayed>(*std::rbegin(data)) };
 
                     using DataListType = std::decay_t<decltype(data)>;
-                    DataListType copy{ std::cbegin(data), std::prev(std::cend(data), 2) };
+                    DataListType copy{ std::make_move_iterator(std::begin(data)), std::make_move_iterator(std::prev(std::end(data), 2)) };
                     copy.emplace_back(DoOperation<TDecayed>(a, b, visitVal));
                     return copy;
                 }
