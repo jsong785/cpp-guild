@@ -156,7 +156,7 @@ template <typename T>
 auto DoEquation(std::string operation) {
     auto&& data{ GetData<T>( GetTokens(std::move(operation)) ) };
     const auto result{ DoFastAccumulate(std::begin(data), std::end(data), DataVector<T>{}, Fold<T>) };
-    assert(!result.empty());
+    assert(result.size() == 1);
     return std::get<T>(*std::cbegin(result));
 }
 
