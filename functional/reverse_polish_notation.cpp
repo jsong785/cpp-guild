@@ -1,13 +1,6 @@
 #include "catch.hpp"
 #include "reverse_polish_notation.hpp"
 
-//static_assert(IsOperator('+'));
-//static_assert(IsOperator('-'));
-//static_assert(IsOperator('*'));
-//static_assert(IsOperator('/'));
-//static_assert(!IsOperator('0'));
-//static_assert(!IsOperator('1'));
-
 TEST_CASE("tokenize", "[rpn]")
 {
     CHECK(Tokenize("123")() == "123");
@@ -64,25 +57,6 @@ TEST_CASE("GetData", "[rpn]")
         CHECK(std::get<Operation>(data[2]) == Operation::Add);
         CHECK(std::get<int64_t>(data[3]) == 100);
         CHECK(std::get<Operation>(data[4]) == Operation::Subtract);
-    }
-}
-
-TEST_CASE("accumulate data", "[rpn]")
-{
-    SECTION("1")
-    {
-        const auto data{ GetData<int64_t>(GetTokens("34 1 + 100 -")) };
-        const auto result{ std::accumulate(data.cbegin(), data.cend(), std::decay_t<decltype(data)>{}, Fold<int64_t>) };
-        CHECK(result.size() == 1);
-        CHECK(std::get<int64_t>(result[0]) == -65);
-    }
-
-    SECTION("2")
-    {
-        const auto data{ GetData<int64_t>(GetTokens("-34 -1 + 100 -")) };
-        const auto result{ std::accumulate(data.cbegin(), data.cend(), std::decay_t<decltype(data)>{}, Fold<int64_t>) };
-        CHECK(result.size() == 1);
-        CHECK(std::get<int64_t>(result[0]) == -135);
     }
 }
 

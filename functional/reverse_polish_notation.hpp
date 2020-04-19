@@ -104,7 +104,7 @@ DataVector<T> GetData(std::vector<std::string> tokens) {
 }
 
 template <typename T>
-std::decay_t<T> DoOperation(const std::decay_t<T> a, const std::decay_t<T> b, const Operation op) {
+auto DoOperation(const std::decay_t<T> a, const std::decay_t<T> b, const Operation op) {
     if(op == Operation::Add) {
         return a+b;
     }
@@ -119,9 +119,9 @@ std::decay_t<T> DoOperation(const std::decay_t<T> a, const std::decay_t<T> b, co
 }
 
 template <typename T>
-DataVector<T> Fold(const DataVector<T>& data, const typename DataVector<T>::value_type& val) {
+DataVector<T> Fold(DataVector<T>&& data, typename DataVector<T>::value_type&& val) {
     return std::visit(
-            [&data](auto &&visitVal){
+            [data = std::move(data)](auto &&visitVal){
                 using VisitValDecayed = std::decay_t<decltype(visitVal)>;
                 using TDecayed = std::decay_t<T>;
                 if constexpr(std::is_same_v<VisitValDecayed, TDecayed>) {
@@ -146,11 +146,19 @@ DataVector<T> Fold(const DataVector<T>& data, const typename DataVector<T>::valu
         , val);
 }
 
+template <typename T, typename Iter, typename FoldFunc>
+auto DoFastAccumulate(Iter begin, Iter end, T init, FoldFunc fold) {
+    for(auto i{ begin }; i != end; ++i) {
+        init = fold(std::move(init), std::move(*i));
+    }
+    return init;
+}
+
 template <typename T>
-std::decay_t<T> DoEquation(std::string operation) {
-    const auto data{ GetData<T>( GetTokens(std::move(operation)) ) };
-    const auto result{ std::accumulate(std::cbegin(data), std::cend(data), std::decay_t<decltype(data)>{}, Fold<T>) };
+auto DoEquation(std::string operation) {
+    auto&& data{ GetData<T>( GetTokens(std::move(operation)) ) };
+    const auto result{ DoFastAccumulate(std::begin(data), std::end(data), DataVector<T>{}, Fold<T>) };
     assert(!result.empty());
-    return std::get<std::decay_t<T>>(*std::cbegin(result));
+    return std::get<T>(*std::cbegin(result));
 }
 
