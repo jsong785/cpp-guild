@@ -3,6 +3,8 @@ project(functional VERSION 1.0 LANGUAGES CXX)
 
 #find_package(Catch REQUIRED)
 add_executable(functional
+               fmap.hpp
+               fmap.cpp
                main.cpp 
                memoize.cpp
                currying.cpp
