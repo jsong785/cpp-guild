@@ -6,6 +6,7 @@ add_executable(functional
                fmap.hpp
                fmap.cpp
                main.cpp 
+               monads.cpp
                memoize.cpp
                currying.cpp
                recursion.cpp
