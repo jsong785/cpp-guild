@@ -107,7 +107,7 @@ TEST_CASE("List", "[monads]")
 
         // including mbind
         CHECK(((GetSomethingIfAboveThree(2) > List<int>{ 1, 2, 3 }) >> doubleValue >> toString) == List<std::string>{});
-        CHECK(((GetSomethingIfAboveThree(4) > List<int>{ 1, 2, 3 })) == List<int>{ 2, 4, 6 });
+        CHECK(((GetSomethingIfAboveThree(4) > List<int>{ 1, 2, 3 }) >> doubleValue >> toString) == List<std::string>{ "2", "2", "4", "4", "6", "6" });
     }
 }
 
