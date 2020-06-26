@@ -10,7 +10,6 @@ add_executable(functional
                memoize.cpp
                currying.cpp
                recursion.cpp
-               maybe_monad.cpp
                reverse_polish_notation.cpp
                reverse_polish_notation_constexpr.cpp
                shortest_route.hpp
