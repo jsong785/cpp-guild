@@ -51,3 +51,35 @@ constexpr auto operator>>(A ma, Func f) {
     return Mbind(std::move(ma), std::move(f));
 }
 
+template <typename AB, typename A>
+static constexpr auto Applicative(Maybe<AB> fab, Maybe<A> fa) {
+    using ResultType = Maybe<std::invoke_result_t<AB, A>>;
+    if(!fab || !fa) {
+        return ResultType{};
+    }
+    return ResultType{ std::invoke(*fab, *fa) };
+}
+
+template <typename AB, typename A>
+static constexpr auto Applicative(List<AB> fab, List<A> fa) {
+    using ResultType = std::invoke_result_t<AB, A>;
+    using ResultTypeList = List<ResultType>;
+    if(fab.empty() || fa.empty()) {
+        return ResultTypeList{};
+    }
+
+    ResultTypeList result;
+    assert(fa.size() * fab.size() <= std::numeric_limits<typename List<ResultType>::size_type>::max());
+    result.reserve(fa.size()*fab.size()); // possibly out of bounds
+    for(auto&& f : fab) {
+        std::transform(fa.begin(), fa.end(), std::back_inserter(result), f);
+    }
+    return result;
+}
+
+template <typename FAB, typename FA>
+static constexpr auto operator>(FAB fab, FA fa) {
+    return Applicative(std::move(fab), std::move(fa));
+}
+
+
