@@ -3,9 +3,6 @@
 #include <optional>
 #include <vector>
 
-template <typename A, typename Func>
-constexpr auto operator|(A, Func);
-
 template <typename T>
 using Maybe = std::optional<T>;
 
