@@ -47,7 +47,7 @@ constexpr auto Mbind(List<A> ma, Func f) -> std::invoke_result_t<Func, A> {
 }
 
 template <typename A, typename Func>
-constexpr auto operator|(A ma, Func f) {
+constexpr auto operator>>(A ma, Func f) {
     return Mbind(std::move(ma), std::move(f));
 }
 
