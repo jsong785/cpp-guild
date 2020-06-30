@@ -36,11 +36,11 @@ TEST_CASE("Maybe", "[monads]")
 
     SECTION("Chaining")
     {
-        CHECK((Just(11) >> addOne >> toString) == Just(std::string{ "12" }));
-        CHECK((Just(100) >> addOne >> toString) == Just(std::string{ "101" }));
+        CHECK((Just(11) | addOne | toString) == Just(std::string{ "12" }));
+        CHECK((Just(100) | addOne | toString) == Just(std::string{ "101" }));
 
-        CHECK((Nothing<int>() >> addOne >> toString) == Nothing<std::string>());
-        static_assert((Nothing<int>() >> addOne) == Nothing<int>());
+        CHECK((Nothing<int>() | addOne | toString) == Nothing<std::string>());
+        static_assert((Nothing<int>() | addOne) == Nothing<int>());
     }
 
     SECTION("Applicative")
@@ -49,9 +49,9 @@ TEST_CASE("Maybe", "[monads]")
             return x + 1;
         };
         using FuncType = std::function<int(const int)>;
-        CHECK((Nothing<FuncType>() > Just(1)) == Nothing<int>());
-        CHECK((Just<FuncType>(AddOneConcrete) > Nothing<int>()) == Nothing<int>());
-        CHECK((Just<FuncType>(AddOneConcrete) > Just(1)) == Just(2));
+        CHECK((Nothing<FuncType>() >> Just(1)) == Nothing<int>());
+        CHECK((Just<FuncType>(AddOneConcrete) >> Nothing<int>()) == Nothing<int>());
+        CHECK((Just<FuncType>(AddOneConcrete) >> Just(1)) == Just(2));
 
         constexpr auto GetSomethingIfAboveThree = [AddOneConcrete](const auto x) -> Maybe<FuncType> {
             if(x > 3) {
@@ -59,12 +59,12 @@ TEST_CASE("Maybe", "[monads]")
             }
             return {};
         };
-        CHECK((GetSomethingIfAboveThree(2) > Just(10)) == Nothing<int>());
-        CHECK((GetSomethingIfAboveThree(4) > Just(10)) == Just(11));
+        CHECK((GetSomethingIfAboveThree(2) >> Just(10)) == Nothing<int>());
+        CHECK((GetSomethingIfAboveThree(4) >> Just(10)) == Just(11));
 
         // including mbind
-        CHECK(((GetSomethingIfAboveThree(2) > Just(10)) >> addOne >> toString) == Nothing<std::string>());
-        CHECK(((GetSomethingIfAboveThree(4) > Just(10)) >> addOne >> toString) == Just(std::string{ "12" }));
+        CHECK((GetSomethingIfAboveThree(2) >> Just(10) | addOne | toString) == Nothing<std::string>());
+        CHECK((GetSomethingIfAboveThree(4) >> Just(10) | addOne | toString) == Just(std::string{ "12" }));
     }
 }
 
@@ -80,11 +80,11 @@ TEST_CASE("List", "[monads]")
 
     SECTION("Chaining")
     {
-        CHECK((List<int>{1, 2, 3} >> doubleValue) == List<int>{ 1, 1, 2, 2, 3, 3 });
-        CHECK((List<int>{1, 2, 3} >> doubleValue >> toString) == 
+        CHECK((List<int>{1, 2, 3} | doubleValue) == List<int>{ 1, 1, 2, 2, 3, 3 });
+        CHECK((List<int>{1, 2, 3} | doubleValue | toString) == 
                 List<std::string>{ "1", "1", "2", "2", "3", "3" });
 
-        CHECK((List<int>{} >> doubleValue >> toString) == List<std::string>{});
+        CHECK((List<int>{} | doubleValue | toString) == List<std::string>{});
     }
 
     SECTION("Applicative")
@@ -93,8 +93,8 @@ TEST_CASE("List", "[monads]")
             return x*2;
         };
         using FuncType = std::function<int(int)>;
-        CHECK((List<FuncType>{} > List<int>{ 1, 2, 3}) == List<int>{});
-        CHECK((List<FuncType>{ doubleValueConcrete } > List<int>{ 1, 2, 3}) == List<int>{ 2, 4, 6 });
+        CHECK((List<FuncType>{} >> List<int>{ 1, 2, 3}) == List<int>{});
+        CHECK((List<FuncType>{ doubleValueConcrete } >> List<int>{ 1, 2, 3}) == List<int>{ 2, 4, 6 });
 
         constexpr auto GetSomethingIfAboveThree = [doubleValueConcrete](const auto x) -> List<FuncType> {
             if(x > 3) {
@@ -102,16 +102,12 @@ TEST_CASE("List", "[monads]")
             }
             return {};
         };
-        CHECK((GetSomethingIfAboveThree(2) > List<int>{ 1, 2, 3 }) == List<int>{});
-        CHECK((GetSomethingIfAboveThree(4) > List<int>{ 1, 2, 3 }) == List<int>{ 2, 4, 6 });
+        CHECK((GetSomethingIfAboveThree(2) >> List<int>{ 1, 2, 3 }) == List<int>{});
+        CHECK((GetSomethingIfAboveThree(4) >> List<int>{ 1, 2, 3 }) == List<int>{ 2, 4, 6 });
 
         // including mbind
-        CHECK(((GetSomethingIfAboveThree(2) > List<int>{ 1, 2, 3 }) >> doubleValue >> toString) == List<std::string>{});
-        CHECK(((GetSomethingIfAboveThree(4) > List<int>{ 1, 2, 3 }) >> doubleValue >> toString) == List<std::string>{ "2", "2", "4", "4", "6", "6" });
+        CHECK((GetSomethingIfAboveThree(2) >> List<int>{ 1, 2, 3 } | doubleValue | toString) == List<std::string>{});
+        CHECK((GetSomethingIfAboveThree(4) >> List<int>{ 1, 2, 3 } | doubleValue | toString) == List<std::string>{ "2", "2", "4", "4", "6", "6" });
     }
-}
-
-TEST_CASE("Continuation", "[monads]")
-{
 }
 
