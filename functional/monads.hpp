@@ -57,7 +57,7 @@ static constexpr auto Applicative(Maybe<AB> fab, Maybe<A> fa) {
     if(!fab || !fa) {
         return ResultType{};
     }
-    return ResultType{ std::invoke(*fab, *fa) };
+    return ResultType{ std::invoke(*fab, std::move(*fa)) };
 }
 
 template <typename AB, typename A>
@@ -72,7 +72,7 @@ static constexpr auto Applicative(List<AB> fab, List<A> fa) {
     assert(fa.size() * fab.size() <= std::numeric_limits<typename List<ResultType>::size_type>::max());
     result.reserve(fa.size()*fab.size()); // possibly out of bounds
     for(auto&& f : fab) {
-        std::transform(fa.begin(), fa.end(), std::back_inserter(result), f);
+        std::transform(fa.begin(), fa.end(), std::back_inserter(result), decltype(f)(f));
     }
     return result;
 }
