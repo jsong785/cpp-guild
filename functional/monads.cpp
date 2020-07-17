@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include "monads.hpp"
 
+#include <utility>
 #include <string>
 
 TEST_CASE("Maybe", "[monads]")
@@ -110,4 +111,68 @@ TEST_CASE("List", "[monads]")
         CHECK((GetSomethingIfAboveThree(4) >> List<int>{ 1, 2, 3 } | doubleValue | toString) == List<std::string>{ "2", "2", "4", "4", "6", "6" });
     }
 }
+
+namespace TestSomeMonadLaws { 
+using ResultPair = std::pair<int64_t, std::string>;
+
+template <typename Func>
+auto Bind(ResultPair result, Func f) {
+    auto res = std::invoke(f, result.first);
+    if(!res.second.empty()) {
+        return decltype(result)(res);
+    }
+    return decltype(result){ res.first, std::move(result.second) };
+}
+
+template <typename Func>
+auto operator|(ResultPair res, Func f) {
+    return Bind(std::move(res), std::move(f));
+}
+
+ResultPair Just(const int64_t val) { return { val, {}}; }
+
+ResultPair TestFunc1(const int64_t val) {
+    if(val < 0) {
+        return { 0, "negative" };
+    }
+    return { val, {} };
+}
+
+ResultPair TestFunc2(const int64_t val) {
+    if(val < 0) {
+        return { 0, {} };
+    }
+    return { val, "duper" };
+}
+
+TEST_CASE("Bleh", "[testme]") 
+{
+    // law 1
+    CHECK((Just(int64_t{-1}) | TestFunc1) == TestFunc1(-1));
+    CHECK((Just(int64_t{2}) | TestFunc1) == TestFunc1(2));
+
+    CHECK((Just(int64_t{-1}) | TestFunc2) == TestFunc2(-1));
+    CHECK((Just(int64_t{2}) | TestFunc2) == TestFunc2(2));
+
+    // law 2
+    CHECK((ResultPair{-1, {}} | Just) == ResultPair{-1, {}});
+    CHECK((ResultPair{1, {}} | Just) == ResultPair{1, {}});
+    CHECK((ResultPair{1, "something"} | Just) == ResultPair{1, "something"});
+    CHECK((ResultPair{-1, "something"} | Just) == ResultPair{-1, "something"});
+
+    auto res = (ResultPair{-1, {}} | TestFunc1) | TestFunc2;
+    auto res2 = ResultPair{-1, {}} | [](const int64_t x){ return TestFunc1(x) | TestFunc2; };
+    CHECK(res == res2);
+
+    res = (ResultPair{-1, "whatever"} | TestFunc1) | TestFunc2;
+    res2 = ResultPair{-1, "whatever"} | [](const int64_t x){ return TestFunc1(x) | TestFunc2; };
+    CHECK(res == res2);
+
+    res = (ResultPair{1, "whatever"} | TestFunc1) | TestFunc2;
+    res2 = ResultPair{1, "whatever"} | [](const int64_t x){ return TestFunc1(x) | TestFunc2; };
+    CHECK(res == res2);
+}
+
+}
+
 
