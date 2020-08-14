@@ -23,49 +23,35 @@ class Flags
         template <typename T>
         friend constexpr bool operator!=(const Flags<T>& f1, const Flags<T>& f2) noexcept;
 
-        template <typename T>
-        friend constexpr auto operator&(const Flags<T>& f1, const Flags<T>& f2) noexcept;
+        constexpr auto& Set(const Enum e) noexcept {
+            this->m_flags |= static_cast<EnumFlag>(e);
+            return *this;
+        }
 
-        template <typename T>
-        friend constexpr auto operator|(const Flags<T>& f1, const Flags<T>& f2) noexcept;
-
-        template <typename T>
-        friend constexpr auto& operator&=(Flags<T>& f1, const Flags<T>& f2) noexcept;
-
-        template <typename T>
-        friend constexpr auto& operator|=(Flags<T>& f1, const Flags<T>& f2) noexcept;
-
-        template <typename Arg>
-        constexpr auto& Set(Arg arg) noexcept {
-            static_assert(std::is_same_v<Enum, Arg> || std::is_same_v<Flags<Enum>, Arg>);
-            if constexpr (std::is_same_v<Enum, Arg>) {
-                this->m_flags |= static_cast<EnumFlag>(arg);
-            }
-            else if(std::is_same_v<Flags<Enum>, Arg>) {
-                this->m_flags |= arg.m_flags;
-            }
+        constexpr auto& Set(const Flags f) noexcept {
+            this->m_flags |= f.m_flags;
             return *this;
         }
 
         template <typename... Args>
         constexpr auto& Set(Args... args) noexcept {
+            static_assert(((std::is_same_v<Enum, Args> || std::is_same_v<Flags<Enum>, Args>) || ...));
             return (this->Set(args), ...);
         }
 
-        template <typename Arg>
-        constexpr auto& Unset(Arg arg) noexcept {
-            static_assert(std::is_same_v<Enum, Arg> || std::is_same_v<Flags<Enum>, Arg>);
-            if constexpr (std::is_same_v<Enum, Arg>) {
-                this->m_flags &= ~static_cast<EnumFlag>(arg);
-            }
-            else if(std::is_same_v<Flags<Enum>, Arg>) {
-                this->m_flags &= ~arg.m_flags;
-            }
+        constexpr auto& Unset(const Enum e) noexcept {
+            this->m_flags &= ~static_cast<EnumFlag>(e);
+            return *this;
+        }
+
+        constexpr auto& Unset(const Flags f) noexcept {
+            this->m_flags &= ~f.m_flags;
             return *this;
         }
 
         template <typename... Args>
         constexpr auto& Unset(Args... args) noexcept {
+            static_assert(((std::is_same_v<Enum, Args> || std::is_same_v<Flags<Enum>, Args>) || ...));
             return (this->Unset(args), ...);
         }
 
