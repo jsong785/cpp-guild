@@ -13,22 +13,60 @@ class Flags
             Set(args...);
         }
 
+        constexpr bool IsEqual(const Flags& other) const noexcept {
+            return this->m_flags == other.m_flags;
+        }
+
         template <typename T>
         friend constexpr bool operator==(const Flags<T>& f1, const Flags<T>& f2) noexcept;
 
         template <typename T>
         friend constexpr bool operator!=(const Flags<T>& f1, const Flags<T>& f2) noexcept;
 
+        template <typename T>
+        friend constexpr auto operator&(const Flags<T>& f1, const Flags<T>& f2) noexcept;
+
+        template <typename T>
+        friend constexpr auto operator|(const Flags<T>& f1, const Flags<T>& f2) noexcept;
+
+        template <typename T>
+        friend constexpr auto& operator&=(Flags<T>& f1, const Flags<T>& f2) noexcept;
+
+        template <typename T>
+        friend constexpr auto& operator|=(Flags<T>& f1, const Flags<T>& f2) noexcept;
+
+        template <typename Arg>
+        constexpr auto& Set(Arg arg) noexcept {
+            static_assert(std::is_same_v<Enum, Arg> || std::is_same_v<Flags<Enum>, Arg>);
+            if constexpr (std::is_same_v<Enum, Arg>) {
+                this->m_flags |= static_cast<EnumFlag>(arg);
+            }
+            else if(std::is_same_v<Flags<Enum>, Arg>) {
+                this->m_flags |= arg.m_flags;
+            }
+            return *this;
+        }
+
         template <typename... Args>
         constexpr auto& Set(Args... args) noexcept {
-            this->m_flags |= (static_cast<EnumFlag>(args) | ...);
+            return (this->Set(args), ...);
+        }
+
+        template <typename Arg>
+        constexpr auto& Unset(Arg arg) noexcept {
+            static_assert(std::is_same_v<Enum, Arg> || std::is_same_v<Flags<Enum>, Arg>);
+            if constexpr (std::is_same_v<Enum, Arg>) {
+                this->m_flags &= ~static_cast<EnumFlag>(arg);
+            }
+            else if(std::is_same_v<Flags<Enum>, Arg>) {
+                this->m_flags &= ~arg.m_flags;
+            }
             return *this;
         }
 
         template <typename... Args>
         constexpr auto& Unset(Args... args) noexcept {
-            this->m_flags &= ~(static_cast<EnumFlag>(args) | ...);
-            return *this;
+            return (this->Unset(args), ...);
         }
 
         constexpr auto& Flip() noexcept {
@@ -49,12 +87,12 @@ class Flags
 template <typename Enum>
 constexpr bool operator==(const Flags<Enum>& f1, const Flags<Enum>& f2) noexcept
 {
-    return f1.m_flags == f2.m_flags;
+    return f1.IsEqual(f2);
 }
 
 template <typename Enum>
 constexpr bool operator!=(const Flags<Enum>& f1, const Flags<Enum>& f2) noexcept
 {
-    return !(f1 == f2);
+    return !f1.IsEqual(f2);
 }
 
