@@ -23,6 +23,24 @@ class Flags
         template <typename T>
         friend constexpr bool operator!=(const Flags<T>& f1, const Flags<T>& f2) noexcept;
 
+        template <typename T>
+        friend constexpr Flags<T> operator&(const Flags<T>& f1, const Flags<T>& f2) noexcept;
+
+        template <typename T>
+        friend constexpr Flags<T> operator|(const Flags<T>& f1, const Flags<T>& f2) noexcept;
+
+        template <typename T>
+        friend constexpr Flags<T> operator^(const Flags<T>& f1, const Flags<T>& f2) noexcept;
+
+        template <typename T>
+        friend constexpr Flags<T>& operator&=(Flags<T>& f1, const Flags<T>& f2) noexcept;
+
+        template <typename T>
+        friend constexpr Flags<T>& operator|=(Flags<T>& f1, const Flags<T>& f2) noexcept;
+
+        template <typename T>
+        friend constexpr Flags<T>& operator^=(Flags<T>& f1, const Flags<T>& f2) noexcept;
+
         constexpr auto& Set(const Enum e) noexcept {
             this->m_flags |= static_cast<EnumFlag>(e);
             return *this;
@@ -64,6 +82,10 @@ class Flags
             return (m_flags & static_cast<EnumFlag>(e)) == static_cast<EnumFlag>(e);
         }
 
+        constexpr bool Test(const Flags f) const noexcept {
+            return (m_flags & f.m_flags) == f.m_flags;
+        }
+
     private:
         static_assert(std::is_enum_v<Enum>);
         using EnumFlag = std::underlying_type_t<Enum>;
@@ -80,5 +102,47 @@ template <typename Enum>
 constexpr bool operator!=(const Flags<Enum>& f1, const Flags<Enum>& f2) noexcept
 {
     return !f1.IsEqual(f2);
+}
+
+template <typename T>
+constexpr Flags<T> operator&(const Flags<T>& f1, const Flags<T>& f2) noexcept
+{
+    auto copy = f1;
+    return copy &= f2;
+}
+
+template <typename T>
+constexpr Flags<T> operator|(const Flags<T>& f1, const Flags<T>& f2) noexcept
+{
+    auto copy = f1;
+    return copy |= f2;
+}
+
+template <typename T>
+constexpr Flags<T> operator^(const Flags<T>& f1, const Flags<T>& f2) noexcept
+{
+    auto copy = f1;
+    return copy ^= f2;
+}
+
+template <typename T>
+constexpr Flags<T>& operator&=(Flags<T>& f1, const Flags<T>& f2) noexcept
+{
+    f1.m_flags &= f2.m_flags;
+    return f1;
+}
+
+template <typename T>
+constexpr Flags<T>& operator|=(Flags<T>& f1, const Flags<T>& f2) noexcept
+{
+    f1.m_flags |= f2.m_flags;
+    return f1;
+}
+
+template <typename T>
+constexpr Flags<T>& operator^=(Flags<T>& f1, const Flags<T>& f2) noexcept
+{
+    f1.m_flags ^= f2.m_flags;
+    return f1;
 }
 

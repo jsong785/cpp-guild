@@ -25,12 +25,19 @@ static_assert(Flags<Test>{Flags<Test>{Test::A}, Test::B} == Flags<Test>{}.Set(Te
 static_assert(Flags<Test>{Test::A, Flags<Test>{Test::B}} != Flags<Test>{}.Set(Test::A));
 static_assert(Flags<Test>{Flags<Test>{Test::A}, Test::B, Flags<Test>{Test::C}, Flags<Test>{Test::D}} == Flags<Test>{}.Set(Test::ALL));
 
-// Test
+// Test (enum only)
 static_assert(Flags<Test>{Test::A, Test::B}.Test(Test::A));
 static_assert(!Flags<Test>{Test::A, Test::B}.Test(Test::C));
 static_assert(!Flags<Test>{Test::A, Test::B}.Test(Test::ALL));
 static_assert(Flags<Test>{Test::ALL}.Test(Test::ALL));
 static_assert(Flags<Test>{Test::ALL}.Test(Test::C));
+//
+// Test (flags only)
+static_assert(Flags<Test>{Test::A, Test::B}.Test(Flags<Test>{Test::A}));
+static_assert(!Flags<Test>{Test::A, Test::B}.Test(Flags<Test>{Test::C}));
+static_assert(!Flags<Test>{Test::A, Test::B}.Test(Flags<Test>{Test::ALL}));
+static_assert(Flags<Test>{Test::ALL}.Test(Flags<Test>{Test::ALL}));
+static_assert(Flags<Test>{Test::ALL}.Test(Flags<Test>{Test::C}));
 
 // Set (enum only)
 static_assert(Flags<Test>{Test::A}.Set(Test::A) == Flags<Test>{Test::A});
@@ -73,6 +80,21 @@ static_assert(Flags<Test>{Test::A, Test::B}.Flip().Flip() == Flags<Test>{Test::A
 static_assert(Flags<Test>{Test::A, Test::B}.Flip().Flip().Test(Test::A));
 static_assert(Flags<Test>{Test::A, Test::B}.Flip().Flip().Test(Test::B));
 static_assert(!Flags<Test>{Test::A, Test::B}.Flip().Flip().Test(Test::C));
+
+// operator&
+static_assert((Flags<Test>{Test::A, Test::B} & Flags<Test>{Test::A, Test::B}) == Flags<Test>{Test::A, Test::B});
+static_assert((Flags<Test>{Test::A} & Flags<Test>{Test::A, Test::B}) == Flags<Test>{Test::A});
+static_assert((Flags<Test>{Test::A} & Flags<Test>{Test::B}) == Flags<Test>{});
+
+// operator |
+static_assert((Flags<Test>{Test::A, Test::B} | Flags<Test>{Test::A, Test::B}) == Flags<Test>{Test::A, Test::B});
+static_assert((Flags<Test>{Test::A} | Flags<Test>{Test::A, Test::B}) == Flags<Test>{Test::A, Test::B});
+static_assert((Flags<Test>{Test::A} | Flags<Test>{Test::B}) == Flags<Test>{Test::A, Test::B});
+
+// operator ^
+static_assert((Flags<Test>{Test::A, Test::B} ^ Flags<Test>{Test::A, Test::B}) == Flags<Test>{});
+static_assert((Flags<Test>{Test::A} ^ Flags<Test>{Test::A, Test::B}) == Flags<Test>{Test::B});
+static_assert((Flags<Test>{Test::A} ^ Flags<Test>{Test::B}) == Flags<Test>{Test::A, Test::B});
 
 int main(const int, const char**)
 {
