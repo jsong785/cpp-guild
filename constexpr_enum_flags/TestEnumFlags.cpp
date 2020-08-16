@@ -162,7 +162,6 @@ inline static void ConstexprTests() {
     TestOperators<TestUint8>();
 }
 
-
 int main(const int, const char**)
 {
     return 0;
