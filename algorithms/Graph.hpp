@@ -3,31 +3,55 @@
 #include <queue>
 #include <vector>
 
-using Visited = std::vector<std::size_t>;
+using Results = std::vector<std::size_t>;
 using AdjList = std::vector<std::vector<std::size_t>>;
 
-Visited Dfs(const AdjList& graph, const std::size_t node) 
-{
-    Visited visited;
-    visited.reserve(graph.size());
+Results Dfs(const AdjList& graph, const std::size_t node) {
+    Results results;
+    results.reserve(graph.size());
 
     std::queue<std::size_t> processQueue;
     processQueue.push(node);
 
-    std::vector<bool> visitedCache(graph.size());
+    std::vector<bool> resultsCache(graph.size(), false);
     while(!processQueue.empty()) {
         const auto v = processQueue.front();
         processQueue.pop();
-        if(visitedCache[v]) {
+        if(resultsCache[v]) {
             continue;
         }
-        visitedCache[v] = true;
-        visited.emplace_back(v);
+        resultsCache[v] = true;
+        results.emplace_back(v);
 
         for(const auto n : graph[v]) {
             processQueue.push(n);
         }
     }
-    return visited;
+    return results;
 }
 
+Results Bfs(const AdjList& graph, const std::size_t node) {
+    Results results;
+    results.reserve(graph.size());
+
+    std::vector<bool> cache(graph.size(), false);
+    cache[node] = true;
+    results.emplace_back(node);
+
+    std::queue<std::size_t> processQueue;
+    processQueue.push(node);
+    while(!processQueue.empty()) {
+        const auto v = processQueue.front();
+        processQueue.pop();
+
+        for(const auto n : graph[v]) {
+            if(!cache[n]) {
+                cache[n] = true;
+                results.emplace_back(n);
+                processQueue.push(n);
+            }
+        }
+    }
+
+    return results;
+}
