@@ -13,14 +13,14 @@ Results Dfs(const AdjList& graph, const std::size_t node) {
     std::queue<std::size_t> processQueue;
     processQueue.push(node);
 
-    std::vector<bool> resultsCache(graph.size(), false);
+    std::vector<bool> cache(graph.size(), false);
     while(!processQueue.empty()) {
         const auto v = processQueue.front();
         processQueue.pop();
-        if(resultsCache[v]) {
+        if(cache[v]) {
             continue;
         }
-        resultsCache[v] = true;
+        cache[v] = true;
         results.emplace_back(v);
 
         for(const auto n : graph[v]) {
