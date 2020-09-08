@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stack>
 #include <queue>
 #include <vector>
 
@@ -10,21 +11,22 @@ Results Dfs(const AdjList& graph, const std::size_t node) {
     Results results;
     results.reserve(graph.size());
 
-    std::queue<std::size_t> processQueue;
-    processQueue.push(node);
-
     std::vector<bool> cache(graph.size(), false);
+
+    std::vector<std::size_t> processQueue;
+    processQueue.reserve(graph.size());
+    processQueue.emplace_back(node);
+
     while(!processQueue.empty()) {
-        const auto v = processQueue.front();
-        processQueue.pop();
-        if(cache[v]) {
-            continue;
-        }
+        const auto v = processQueue.back();
+        processQueue.pop_back();
+
         cache[v] = true;
         results.emplace_back(v);
-
-        for(const auto n : graph[v]) {
-            processQueue.push(n);
+        for(auto n = graph[v].rbegin(); n != graph[v].rend(); ++n) {
+            if(!cache[*n]) {
+                processQueue.emplace_back(*n);
+            }
         }
     }
     return results;
@@ -35,11 +37,12 @@ Results Bfs(const AdjList& graph, const std::size_t node) {
     results.reserve(graph.size());
 
     std::vector<bool> cache(graph.size(), false);
-    cache[node] = true;
-    results.emplace_back(node);
 
     std::queue<std::size_t> processQueue;
     processQueue.push(node);
+    results.emplace_back(node);
+    cache[node] = true;
+
     while(!processQueue.empty()) {
         const auto v = processQueue.front();
         processQueue.pop();
