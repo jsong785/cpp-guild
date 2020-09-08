@@ -85,6 +85,7 @@ TEST_CASE("Invert binary tree", "[tree]")
     }
 }
 
+/*
 TEST_CASE("Priority Heap", "[tree]") {
     SECTION("Compare Empty")
     {
@@ -131,4 +132,5 @@ TEST_CASE("Priority Heap", "[tree]") {
         CHECK(heap.pop() == 10); CHECK(heap.empty());
     }
 }
+*/
 
