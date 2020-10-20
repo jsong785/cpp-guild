@@ -5,6 +5,7 @@ project(templates VERSION 1.0 LANGUAGES CXX)
 add_executable(templates
                main.cpp 
                TestVirtual.cpp
+               TestOverload.cpp
                TestFibonacci.cpp
                TestNested.cpp
                TestSfinae.cpp
