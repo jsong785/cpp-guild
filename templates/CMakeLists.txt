@@ -10,6 +10,7 @@ add_executable(templates
                TestNested.cpp
                TestSfinae.cpp
                TestTuple.cpp
+               TestTypeList.cpp
                TestVariadic.cpp)
 set_property(TARGET templates PROPERTY CXX_STANDARD 17)
 #target_link_libraries(templates Catch)
